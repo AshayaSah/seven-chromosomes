@@ -1,14 +1,13 @@
 import json
 import pandas as pd
-from datetime import datetime
 from typing import List
 import redis
 from config import Config
-import logging
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import HumanMessage, AIMessage
+from utils.logger import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger()
 
 redis_history_client = redis.Redis.from_url(
     Config.REDIS_HISTORY_URL, decode_responses=True
