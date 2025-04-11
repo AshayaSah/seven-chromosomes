@@ -3,9 +3,7 @@ from typing import List, Union
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, TextLoader
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from src.utils.logger import setup_logger
-
-logger = setup_logger()
+from config import logger
 
 def load_content(source: Union[str, List[str]], source_type: str) -> List[Document]:
     try:

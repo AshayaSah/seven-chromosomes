@@ -2,25 +2,14 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from src.utils.logger import setup_logger
-import os
-
-logger = setup_logger()
-
-
-def get_api_key():
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        logger.error("GOOGLE_API_KEY not set in environment.")
-        raise ValueError("GOOGLE_API_KEY is required but not set.")
-    return api_key
+from config import GOOGLE_API_KEY,logger
 
 
 def get_embeddings():
     try:
         logger.info("Initializing embeddings model.")
         embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001", google_api_key=get_api_key()
+            model="models/embedding-001", google_api_key=GOOGLE_API_KEY # type: ignore
         )
         logger.info("Embeddings model initialized.")
         return embeddings
@@ -33,7 +22,7 @@ def get_chat_model():
     try:
         logger.info("Initializing chat model.")
         model = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash", temperature=0.3, google_api_key=get_api_key()
+            model="gemini-1.5-flash", temperature=0.3, google_api_key=GOOGLE_API_KEY
         )
         logger.info("Chat model initialized.")
         return model

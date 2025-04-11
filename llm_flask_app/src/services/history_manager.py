@@ -4,13 +4,10 @@ from typing import List
 import redis
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import HumanMessage, AIMessage
-from src.utils.logger import setup_logger
-from config import Config
-logger = setup_logger()
+from config import REDIS_HISTORY_URL, logger
 
-redis_history_client = redis.Redis.from_url(
-    Config.REDIS_HISTORY_URL, decode_responses=True
-)
+
+redis_history_client = redis.Redis.from_url(REDIS_HISTORY_URL, decode_responses=True)
 
 
 def save_conversation_to_redis(conversation_entry: tuple):
@@ -77,16 +74,15 @@ def get_session_chat_history(user_id: str) -> ChatMessageHistory:
     try:
         history_data = redis_history_client.lrange(key, 0, -1)
         chat_history = ChatMessageHistory()
-        if isinstance(history_data, list):
-            if history_data:
-                for entry in history_data:
-                    msg = json.loads(entry)
-                    if msg["type"] == "human":
-                        chat_history.add_message(HumanMessage(content=msg["content"]))
-                    elif msg["type"] == "ai":
-                        chat_history.add_message(AIMessage(content=msg["content"]))
-                logger.info(f"Loaded {len(history_data)} messages for user {user_id}")
-            return chat_history
+        if history_data:
+            for entry in history_data:
+                msg = json.loads(entry)
+                if msg["type"] == "human":
+                    chat_history.add_message(HumanMessage(content=msg["content"]))
+                elif msg["type"] == "ai":
+                    chat_history.add_message(AIMessage(content=msg["content"]))
+            logger.info(f"Loaded {len(history_data)} messages for user {user_id}")
+        return chat_history
     except Exception as e:
         logger.error(f"Error loading chat history for {user_id}: {str(e)}")
         raise

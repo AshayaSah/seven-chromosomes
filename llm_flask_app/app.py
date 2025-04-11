@@ -1,19 +1,17 @@
-from dotenv import load_dotenv
-import os
 from flask import Flask
 from src.utils.logger import setup_logger
 from src.routes.api_routes import api_bp
-from config import Config
-
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+from config import DEBUG, HOST
 
 def create_app():
     app = Flask(__name__)
     logger = setup_logger()
     logger.info("Starting LLM Flask application")
+
     app.register_blueprint(api_bp, url_prefix="/api")
     return app
 
+
 if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT)
+    app: Flask = create_app()
+    app.run(debug=DEBUG, host=HOST, load_dotenv = True)

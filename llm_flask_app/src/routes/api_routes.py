@@ -13,12 +13,7 @@ from src.services.history_manager import (
 from datetime import datetime
 import traceback
 from langchain_core.messages import HumanMessage, AIMessage
-from src.utils.logger import setup_logger
-
-logger = setup_logger()
-
-
-api_bp = Blueprint("api", __name__)
+from config import logger, api_bp
 
 
 @api_bp.route("/process-content", methods=["POST"])

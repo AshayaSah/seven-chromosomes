@@ -10,4 +10,5 @@ faiss-cpu==1.10.0
 beautifulsoup4==4.13.3
 langchain_google_genai==2.1.2
 sqlalchemy==2.0.40
+setuptools==78.1.0
 langchain-core==0.3.51
