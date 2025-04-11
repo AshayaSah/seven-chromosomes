@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyCPmJrgK2WL7tueEeK72VV0DMIEqG_SzFQ")
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
     REDIS_HISTORY_URL = os.getenv("REDIS_HISTORY_URL", "redis://localhost:6379/1")
     USER_AGENT = os.getenv(
         "USER_AGENT",
