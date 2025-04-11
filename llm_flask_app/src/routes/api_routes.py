@@ -11,14 +11,14 @@ from src.services.history_manager import (
     save_session_chat_history,
 )
 from datetime import datetime
-from config import Config
 import traceback
 from langchain_core.messages import HumanMessage, AIMessage
 from src.utils.logger import setup_logger
+
 logger = setup_logger()
 
-api_bp = Blueprint("api", __name__)
 
+api_bp = Blueprint("api", __name__)
 
 
 @api_bp.route("/process-content", methods=["POST"])
@@ -40,7 +40,9 @@ def process_content():
         return jsonify({"error": "Please provide a question."}), 400
 
     try:
-        logger.info(f"Processing content for question: {user_question} by user: {user_name}")
+        logger.info(
+            f"Processing content for question: {user_question} by user: {user_name}"
+        )
         documents = load_content(source, source_type)
         if not documents:
             logger.warning(f"No content loaded from source: {source}")
@@ -51,20 +53,24 @@ def process_content():
             logger.warning(f"No text chunks created from source: {source}")
             return jsonify({"error": "No text chunks created from the source."}), 400
 
-        vector_store = get_vector_store(text_chunks, Config.GOOGLE_API_KEY, user_name)
+        vector_store = get_vector_store(text_chunks, user_name)
         if not vector_store:
             logger.error("Failed to create/load vector store.")
             return jsonify({"error": "Failed to create/load vector store."}), 500
 
         retriever = vector_store.as_retriever(search_kwargs={"k": 4})
-        chain = get_conversational_chain(Config.GOOGLE_API_KEY, retriever)
+        chain = get_conversational_chain(retriever)
 
         # Load chat history for the user
         chat_history = get_session_chat_history(user_name)
-        logger.info(f"Loaded chat history with {len(chat_history.messages)} messages for {user_name}")
+        logger.info(
+            f"Loaded chat history with {len(chat_history.messages)} messages for {user_name}"
+        )
 
         # Invoke the chain with chat history
-        result = chain.invoke({"input": user_question, "chat_history": chat_history.messages})
+        result = chain.invoke(
+            {"input": user_question, "chat_history": chat_history.messages}
+        )
         answer = result["answer"]
         logger.info(f"Answer generated: {answer}")
 
@@ -84,17 +90,20 @@ def process_content():
         save_conversation_to_redis(conversation_entry)
         logger.info(f"Conversation saved to Redis for user: {user_name}")
 
-        return jsonify({
-            "question": user_question,
-            "answer": answer,
-            "source": source,
-            "source_type": source_type,
-            "timestamp": conversation_entry[2]
-        }), 200
+        return jsonify(
+            {
+                "question": user_question,
+                "answer": answer,
+                "source": source,
+                "source_type": source_type,
+                "timestamp": conversation_entry[2],
+            }
+        ), 200
     except Exception as e:
         error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
         logger.error(error_msg)
         return jsonify({"error": error_msg}), 500
+
 
 @api_bp.route("/conversation-history", methods=["GET"])
 def get_conversation_history():
@@ -102,17 +111,21 @@ def get_conversation_history():
         logger.info("Fetching conversation history.")
         history = get_conversation_history_from_redis()
         logger.info(f"Retrieved {len(history)} history entries.")
-        return jsonify([{
-            "question": q,
-            "answer": a,
-            "timestamp": t,
-            "source": s,
-            "source_type": st
-        } for q, a, t, s, st in history]), 200
+        return jsonify(
+            [
+                {
+                    "question": q,
+                    "answer": a,
+                    "timestamp": t,
+                    "source": s,
+                    "source_type": st,
+                }
+                for q, a, t, s, st in history
+            ]
+        ), 200
     except Exception as e:
         logger.error(f"Error fetching history: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
 
 
 @api_bp.route("/save-history", methods=["POST"])

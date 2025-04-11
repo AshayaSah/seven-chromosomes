@@ -2,16 +2,29 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-import logging
+from src.utils.logger import setup_logger
+import os
 
-logger = logging.getLogger(__name__)
+logger = setup_logger()
 
 
-def get_embeddings(api_key: str):
+def get_api_key():
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        logger.error("GOOGLE_API_KEY not set in environment.")
+        raise ValueError("GOOGLE_API_KEY is required but not set.")
+    return api_key
+
+
+def get_embeddings():
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        logger.error("GOOGLE_API_KEY not set in environment.")
+        raise ValueError("GOOGLE_API_KEY is required but not set.")
     try:
         logger.info("Initializing embeddings model.")
         embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001", google_api_key=api_key
+            model="models/embedding-001", google_api_key=get_api_key()
         )
         logger.info("Embeddings model initialized.")
         return embeddings
@@ -20,11 +33,15 @@ def get_embeddings(api_key: str):
         raise
 
 
-def get_chat_model(api_key: str):
+def get_chat_model():
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        logger.error("GOOGLE_API_KEY not set in environment.")
+        raise ValueError("GOOGLE_API_KEY is required but not set.")
     try:
         logger.info("Initializing chat model.")
         model = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash", temperature=0.3, google_api_key=api_key
+            model="gemini-1.5-flash", temperature=0.3, google_api_key=get_api_key()
         )
         logger.info("Chat model initialized.")
         return model
@@ -33,11 +50,11 @@ def get_chat_model(api_key: str):
         raise
 
 
-def get_conversational_chain(api_key: str, retriever):
+def get_conversational_chain(retriever):
     """Create a conversational chain with chat history support."""
     try:
         logger.info("Creating conversational chain with history support.")
-        model = get_chat_model(api_key)
+        model = get_chat_model()
 
         # Contextualize question prompt
         contextualize_q_system_prompt = """Given a chat history and the latest user question \
@@ -61,7 +78,7 @@ def get_conversational_chain(api_key: str, retriever):
             Use the following pieces of retrieved context to answer the question. \
             If you don't know the answer, just say that you don't know. \
             Keep the answer concise and limited to three sentences.\n\n{context}"""
-        
+
         qa_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", qa_system_prompt),

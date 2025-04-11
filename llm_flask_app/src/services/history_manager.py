@@ -2,11 +2,10 @@ import json
 import pandas as pd
 from typing import List
 import redis
-from config import Config
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import HumanMessage, AIMessage
-from utils.logger import setup_logger
-
+from src.utils.logger import setup_logger
+from config import Config
 logger = setup_logger()
 
 redis_history_client = redis.Redis.from_url(
