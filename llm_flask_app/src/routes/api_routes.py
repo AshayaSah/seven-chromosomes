@@ -10,6 +10,7 @@ from src.services.history_manager import (
 )
 from datetime import datetime
 from config import Config
+import traceback
 
 api_bp = Blueprint("api", __name__)
 
@@ -38,9 +39,14 @@ def process_content():
         if not vector_store:
             return jsonify({"error": "Failed to create/load vector store."}), 500
 
+        # Search for relevant documents
         docs = vector_store.similarity_search(user_question, k=4)
-        chain = get_conversational_chain(Config.GOOGLE_API_KEY) # type: ignore
-        answer = chain.invoke({"input_documents": docs, "question": user_question})["output_text"]
+        if not docs:
+            return jsonify({"error": "No relevant documents found for the question."}), 400
+
+        # Get the conversational chain and generate answer
+        chain = get_conversational_chain(Config.GOOGLE_API_KEY)
+        answer = chain.invoke({"context": docs, "question": user_question})
     
         conversation_entry = (
             user_question,
@@ -59,7 +65,8 @@ def process_content():
             "timestamp": conversation_entry[2]
         }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
+        return jsonify({"error": str(error_msg)}), 500
 
 @api_bp.route("/conversation_history", methods=["GET"])
 def get_conversation_history():
