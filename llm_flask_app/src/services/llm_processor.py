@@ -17,10 +17,6 @@ def get_api_key():
 
 
 def get_embeddings():
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        logger.error("GOOGLE_API_KEY not set in environment.")
-        raise ValueError("GOOGLE_API_KEY is required but not set.")
     try:
         logger.info("Initializing embeddings model.")
         embeddings = GoogleGenerativeAIEmbeddings(
@@ -34,10 +30,6 @@ def get_embeddings():
 
 
 def get_chat_model():
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        logger.error("GOOGLE_API_KEY not set in environment.")
-        raise ValueError("GOOGLE_API_KEY is required but not set.")
     try:
         logger.info("Initializing chat model.")
         model = ChatGoogleGenerativeAI(

@@ -77,15 +77,16 @@ def get_session_chat_history(user_id: str) -> ChatMessageHistory:
     try:
         history_data = redis_history_client.lrange(key, 0, -1)
         chat_history = ChatMessageHistory()
-        if history_data:
-            for entry in history_data:
-                msg = json.loads(entry)
-                if msg["type"] == "human":
-                    chat_history.add_message(HumanMessage(content=msg["content"]))
-                elif msg["type"] == "ai":
-                    chat_history.add_message(AIMessage(content=msg["content"]))
-            logger.info(f"Loaded {len(history_data)} messages for user {user_id}")
-        return chat_history
+        if isinstance(history_data, list):
+            if history_data:
+                for entry in history_data:
+                    msg = json.loads(entry)
+                    if msg["type"] == "human":
+                        chat_history.add_message(HumanMessage(content=msg["content"]))
+                    elif msg["type"] == "ai":
+                        chat_history.add_message(AIMessage(content=msg["content"]))
+                logger.info(f"Loaded {len(history_data)} messages for user {user_id}")
+            return chat_history
     except Exception as e:
         logger.error(f"Error loading chat history for {user_id}: {str(e)}")
         raise

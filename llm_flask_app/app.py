@@ -1,15 +1,11 @@
-# app.py
-import os
 from dotenv import load_dotenv
+import os
 from flask import Flask
 from src.utils.logger import setup_logger
 from src.routes.api_routes import api_bp
 from config import Config
 
-load_dotenv()
-
-
-
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 def create_app():
     app = Flask(__name__)
