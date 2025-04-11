@@ -1,0 +1,9 @@
+llm_flask_app/faissdb
+llm_flask_app/venv
+llm_flask_app/.env
+
+__pycache__
+
+
+setup_folder.py
+
