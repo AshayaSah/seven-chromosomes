@@ -11,13 +11,14 @@ from src.services.history_manager import (
     get_session_chat_history,
     save_session_chat_history,
 )
-import os
 from datetime import datetime
 import traceback
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from src.config import logger, api_bp, REDIS_HISTORY_URL
-
+import re
+from werkzeug.utils import secure_filename
+from pathlib import Path
 
 @api_bp.route("/process-content", methods=["POST"])
 def process_content():
@@ -186,4 +187,113 @@ def clear_vector_store(username):
         }), 200
     except Exception as e:
         logger.error(f"Error clearing history for {username}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
+@api_bp.route("/process-file-content", methods=["POST"])
+def get_process_content():
+    username = None
+    source = None
+    source_type = None
+    user_question = None
+
+    # Create data folder
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+
+    # Handle file upload or JSON
+    if request.content_type.startswith("multipart/form-data"):
+        if 'file' not in request.files:
+            logger.warning("No file provided in request.")
+            return jsonify({"error": "No file provided."}), 400
+        file = request.files['file']
+        username = request.form.get("username", "").lower()
+        user_question = request.form.get("question")
+        source_type = request.form.get("source_type", "unknown")
+
+        if not file.filename:
+            logger.warning("Empty file provided.")
+            return jsonify({"error": "Empty file provided."}), 400
+
+        # Save file to data/username/
+        filename = secure_filename(file.filename)
+        user_dir = data_dir / username
+        user_dir.mkdir(exist_ok=True)
+        source = user_dir / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
+        file.save(source)
+    else:
+        data = request.get_json()
+        username = data.get("username", "").lower()
+        source = data.get("source")
+        source_type = data.get("source_type", "unknown")
+        user_question = data.get("question")
+
+    # Validate inputs
+    if not username or not re.match(r"^[a-zA-Z0-9_-]+$", username):
+        logger.warning("Invalid or missing username.")
+        return jsonify({"error": "Please provide a valid username."}), 400
+    if not user_question:
+        logger.warning("No question provided.")
+        return jsonify({"error": "Please provide a question."}), 400
+    if source_type not in ["pdf", "web", "text", "raw", "unknown"]:
+        logger.warning(f"Invalid source_type: {source_type}")
+        return jsonify({"error": "Invalid source_type."}), 400
+
+    try:
+        logger.info(f"Processing for user: {username}, question: {user_question}")
+        text_chunks = []
+        if source:
+            documents = load_content(str(source), source_type)
+            if not documents:
+                logger.warning(f"No content loaded from source: {source}")
+                return jsonify({"error": "No content loaded from the source."}), 400
+            text_chunks = get_text_chunks(documents)
+            if not text_chunks:
+                logger.warning(f"No text chunks created from source: {source}")
+                return jsonify({"error": "No text chunks created from the source."}), 400
+            logger.info(f"Loaded {len(text_chunks)} chunks for {username}")
+
+        vector_store = get_vector_store(text_chunks, username)
+        if not vector_store:
+            logger.error("Failed to retrieve vector store.")
+            return jsonify({"error": "Failed to retrieve vector store."}), 500
+
+        retriever = vector_store.as_retriever(search_kwargs={"k": 4})
+        chain = get_conversational_chain(retriever)
+        chat_history = get_session_chat_history(username)
+
+        result = chain.invoke({"input": user_question, "chat_history": chat_history.messages})
+        answer = result["answer"]
+
+        chat_history.add_message(HumanMessage(content=user_question))
+        chat_history.add_message(AIMessage(content=answer))
+        save_session_chat_history(username, chat_history)
+
+        conversation_entry = (
+            user_question,
+            answer,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            str(source) or "existing_vector_store",
+            source_type
+        )
+        save_conversation_to_redis(conversation_entry)
+
+        return jsonify({
+            "status": "success",
+            "data": {
+                "question": user_question,
+                "answer": answer,
+                "source": str(source) or "existing_vector_store",
+                "source_type": source_type
+            },
+            "message": None,
+            "timestamp": conversation_entry[2]
+        }), 200
+    except FileNotFoundError as e:
+        logger.error(f"File error: {str(e)}")
+        return jsonify({"error": str(e)}), 400
+    except ValueError as e:
+        logger.error(f"Input error: {str(e)}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500
