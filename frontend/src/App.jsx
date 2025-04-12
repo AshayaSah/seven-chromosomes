@@ -18,6 +18,7 @@ import AddPatientRecord from "./components/AddPatientRecord";
 import PatientRecords from "./components/PatientRecords";
 import HomePage from "./pages/HomePage";
 import Topbar from "./components/layout/Topbar";
+import ViewPatientsRecords from "./components/ViewPatientsRecords";
 
 function App() {
   return (
@@ -33,6 +34,10 @@ function App() {
             <Route path="/register-doctor" element={<RegisterDoctor />} />
             <Route path="/register-patient" element={<RegisterPatient />} />
             <Route path="/add-patient-record" element={<AddPatientRecord />} />
+            <Route
+              path="/view-patients-records"
+              element={<ViewPatientsRecords />}
+            />
             <Route path="/records" element={<PatientRecords />} />
 
             {/* Redirecting to HomePage for Illigal Routes  */}

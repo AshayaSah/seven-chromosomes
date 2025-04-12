@@ -7,6 +7,16 @@ import { Button } from "@/components/ui/button"; // Adjust this path based on yo
 import { ModeToggle } from "./ui/ModeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
 
 const Navbar = () => {
   const { isAdmin, currentAccount, connectWallet, isDoctor, isPatient } =
@@ -62,6 +72,15 @@ const Navbar = () => {
               className={`${isActive("/add-patient-record")}`}
             >
               Add Record
+            </Link>
+          )}
+
+          {isDoctor && (
+            <Link
+              to="/view-patients-records"
+              className={`${isActive("/view-patients-records")}`}
+            >
+              View Patients Records
             </Link>
           )}
 
