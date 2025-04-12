@@ -1,4 +1,4 @@
-llm_flask_app/faissdb
+/faissdb
 llm_flask_app/venv
 llm_flask_app/.env
 
@@ -24,10 +24,14 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.ideadd
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+er.2017-00234.pdf
+
+test.py
+/app.py
