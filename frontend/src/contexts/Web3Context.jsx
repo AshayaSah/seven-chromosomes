@@ -1,7 +1,7 @@
 // src/contexts/Web3Context.js
 import React, { useState, useEffect, createContext, useContext } from "react";
 import Web3 from "web3";
-import MedicalRecordsABI from "../../../test-contract/build/contracts/MedicalRecords.json";
+import MedicalRecordsABI from "../../../medicalrecordcontract/build/contracts/MedicalRecords.json";
 
 const Web3Context = createContext();
 

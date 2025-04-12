@@ -59,9 +59,9 @@ const Navbar = () => {
 
               {isDoctor && (
                 <Link
-                  to="/add-record"
+                  to="/add-patient-record"
                   className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                    "/add-record"
+                    "/add-patient-record"
                   )}`}
                 >
                   Add Record

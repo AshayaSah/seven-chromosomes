@@ -11,8 +11,10 @@ import { Web3Provider } from "./contexts/Web3Context";
 // Components
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import AdminDashboard from "./components/AdminDashboard";
 import RegisterDoctor from "./components/RegisterDoctor";
+import RegisterPatient from "./components/RegisterPatient";
+import AddPatientRecord from "./components/AddPatientRecord";
+import PatientRecords from "./components/PatientRecords";
 
 function App() {
   return (
@@ -22,7 +24,13 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<RegisterDoctor />} />
+          <Route path="/register-doctor" element={<RegisterDoctor />} />
+          <Route path="/register-patient" element={<RegisterPatient />} />
+          <Route path="/add-patient-record" element={<AddPatientRecord />} />
+          <Route path="/records" element={<PatientRecords />} />
+
+          {/* Redirecting to HomePage for Illigal Routes  */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </Web3Provider>

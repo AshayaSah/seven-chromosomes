@@ -5,10 +5,8 @@ const RegisterDoctor = () => {
   const [doctorAddress, setDoctorAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", content: "" });
-  const test = useWeb3();
-  const { currentAccount, medicalRecordsContract } = useWeb3();
 
-  //   console.log(test);
+  const { currentAccount, medicalRecordsContract } = useWeb3();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
