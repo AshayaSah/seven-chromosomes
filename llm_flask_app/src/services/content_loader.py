@@ -1,9 +1,8 @@
-# src/services/content_loader.py
 from typing import List, Union
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, TextLoader
 from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from config import logger
+from src.config import logger
 
 
 def load_content(source: Union[str, List[str]], source_type: str) -> List[Document]:
@@ -57,3 +56,5 @@ def get_text_chunks(documents: List[Document]) -> List[str]:
     except Exception as e:
         logger.error(f"Error splitting documents: {str(e)}")
         raise Exception(f"Error splitting documents: {e}")
+
+

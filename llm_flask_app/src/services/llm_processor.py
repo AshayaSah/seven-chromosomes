@@ -2,7 +2,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from config import logger
+from src.config import logger
 import os
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
