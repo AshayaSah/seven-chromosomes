@@ -1,12 +1,10 @@
-import os
 from flask import Blueprint
 from src.utils.logger import setup_logger
 
 REDIS_HISTORY_URL = "redis://localhost:6379/1"
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-DEBUG = bool(os.getenv("APP_DEBUGING"))
 HOST = "0.0.0.0"
-USER_AGENT = os.getenv("USER_AGENT")
+USER_AGENT= "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+DEBUG= True
 
 api_bp = Blueprint("api", __name__)
 logger = setup_logger()
