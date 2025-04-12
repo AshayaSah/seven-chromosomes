@@ -2,14 +2,16 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from config import GOOGLE_API_KEY,logger
+from config import logger
+import os
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 def get_embeddings():
     try:
         logger.info("Initializing embeddings model.")
         embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001", google_api_key=GOOGLE_API_KEY # type: ignore
+            model="models/embedding-001", google_api_key=GOOGLE_API_KEY
         )
         logger.info("Embeddings model initialized.")
         return embeddings

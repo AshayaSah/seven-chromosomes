@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from config import logger
 
+
 def load_content(source: Union[str, List[str]], source_type: str) -> List[Document]:
     try:
         logger.info(f"Loading content from {source_type}: {source}")
