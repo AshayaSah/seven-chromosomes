@@ -15,15 +15,19 @@ import RegisterDoctor from "./components/RegisterDoctor";
 import RegisterPatient from "./components/RegisterPatient";
 import AddPatientRecord from "./components/AddPatientRecord";
 import PatientRecords from "./components/PatientRecords";
+import HomePage from "./pages/HomePage";
+import Topbar from "./components/layout/Topbar";
 
 function App() {
   return (
     <Web3Provider>
       <Router>
+        <Topbar></Topbar>
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/register-doctor" element={<RegisterDoctor />} />
           <Route path="/register-patient" element={<RegisterPatient />} />
           <Route path="/add-patient-record" element={<AddPatientRecord />} />
