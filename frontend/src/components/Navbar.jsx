@@ -18,74 +18,65 @@ const Navbar = () => {
     <nav className="bg-blue-600 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-white text-xl font-bold">
-                MedChain
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="text-white text-xl font-bold">
+              MedChain
+            </Link>
+          </div>
+
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+            <Link
+              to="/"
+              className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
+                "/"
+              )}`}
+            >
+              Home
+            </Link>
+
+            {isPatient && (
               <Link
-                to="/"
+                to="/records"
                 className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                  "/"
+                  "/records"
                 )}`}
               >
-                Home
+                My Records
               </Link>
+            )}
 
-              {isPatient && (
-                <Link
-                  to="/records"
-                  className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                    "/records"
-                  )}`}
-                >
-                  My Records
-                </Link>
-              )}
-
-              {isDoctor && (
-                <Link
-                  to="/add-record"
-                  className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                    "/add-record"
-                  )}`}
-                >
-                  Add Record
-                </Link>
-              )}
-
-              {!isPatient && !isDoctor && currentAccount && (
-                <>
-                  <Link
-                    to="/register"
-                    className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                      "/register"
-                    )}`}
-                  >
-                    Register as Patient
-                  </Link>
-                  <Link
-                    to="/register-doctor"
-                    className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                      "/register-doctor"
-                    )}`}
-                  >
-                    Register as Doctor
-                  </Link>
-                </>
-              )}
-
+            {isDoctor && (
               <Link
-                to="/about"
+                to="/add-record"
                 className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
-                  "/about"
+                  "/add-record"
                 )}`}
               >
-                About
+                Add Record
               </Link>
-            </div>
+            )}
+
+            {!isPatient && !isDoctor && currentAccount && (
+              <>
+                <Link
+                  to="/register"
+                  className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
+                    "/register"
+                  )}`}
+                >
+                  Register as Patient
+                </Link>
+              </>
+            )}
+
+            <Link
+              to="/about"
+              className={`text-white px-3 py-2 rounded-md text-sm font-medium ${isActive(
+                "/about"
+              )}`}
+            >
+              About
+            </Link>
           </div>
           <div className="flex items-center">
             {!currentAccount ? (

@@ -10,6 +10,7 @@ import { Web3Provider } from "./contexts/Web3Context";
 
 // Components
 import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 
 function App() {
   return (
