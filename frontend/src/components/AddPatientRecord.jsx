@@ -3,6 +3,19 @@ import React, { useState } from "react";
 import { useWeb3 } from "../contexts/Web3Context";
 import { uploadToIPFS } from "../utils/ipfsUtils";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const AddPatientRecord = () => {
   const { currentAccount, medicalRecordsContract, isDoctor } = useWeb3();
   const [patientAddress, setPatientAddress] = useState(currentAccount);
@@ -82,119 +95,109 @@ const AddPatientRecord = () => {
     const encryptionKey = localStorage.getItem("encryptionKey");
     return encryptionKey;
   };
-
   return (
-    <div className="w-full mx-auto mt-4 max-w-2xl p-8 border border-gray-200 rounded-lg shadow-lg bg-white">
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+    <Card className="w-full mx-auto mt-4 max-w-2xl p-8 border border-gray-200 shadow-lg bg-white">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-bold text-muted-foreground">
           Add Medical Record
-        </h2>
+        </CardTitle>
+      </CardHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              htmlFor="patientAddress"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Patient Ethereum Address *
-            </label>
-            <input
-              id="patientAddress"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={patientAddress}
-              onChange={(e) => setPatientAddress(e.target.value)}
-              placeholder="0x..."
-              required
-            />
-          </div>
+      <Card>
+        <CardContent className="space-y-5 w-full text-muted-foreground">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Ethereum Address */}
+            <div className="space-y-2">
+              <Label htmlFor="patientAddress" className=" font-medium">
+                Patient Ethereum Address *
+              </Label>
+              <Input
+                id="patientAddress"
+                placeholder="0x..."
+                value={patientAddress}
+                onChange={(e) => setPatientAddress(e.target.value)}
+                className="focus-visible:ring-primary"
+                required
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="recordType"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Record Type *
-            </label>
-            <select
-              id="recordType"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={recordType}
-              onChange={(e) => setRecordType(e.target.value)}
-              required
-            >
-              <option value="" disabled>
-                Select record type
-              </option>
-              <option value="Prescription">Prescription</option>
-              <option value="Lab Report">Lab Report</option>
-              <option value="Diagnosis">Diagnosis</option>
-              <option value="Imaging">Imaging (X-Ray, MRI, etc.)</option>
-              <option value="Surgery">Surgery Report</option>
-            </select>
-          </div>
+            {/* Record Type */}
+            <div className="space-y-2">
+              <Label htmlFor="recordType" className=" font-medium">
+                Record Type *
+              </Label>
+              <Select value={recordType} onValueChange={setRecordType} required>
+                <SelectTrigger className="focus-visible:ring-primary">
+                  <SelectValue placeholder="Select record type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Prescription">Prescription</SelectItem>
+                  <SelectItem value="Lab Report">Lab Report</SelectItem>
+                  <SelectItem value="Diagnosis">Diagnosis</SelectItem>
+                  <SelectItem value="Imaging">
+                    Imaging (X-Ray, MRI, etc.)
+                  </SelectItem>
+                  <SelectItem value="Surgery">Surgery Report</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <label
-              htmlFor="doctorName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Doctor Name *
-            </label>
-            <input
-              id="doctorName"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={doctorName}
-              onChange={(e) => setDoctorName(e.target.value)}
-              placeholder="Dr. ..."
-              required
-            />
-          </div>
+            {/* Doctor Name */}
+            <div className="space-y-2">
+              <Label htmlFor="doctorName" className=" font-medium">
+                Doctor Name *
+              </Label>
+              <Input
+                id="doctorName"
+                placeholder="Dr. ..."
+                value={doctorName}
+                onChange={(e) => setDoctorName(e.target.value)}
+                className="focus-visible:ring-primary"
+                required
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="fileInput"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Medical Record File *
-            </label>
-            <input
-              id="fileInput"
-              type="file"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              onChange={handleFileChange}
-              required
-            />
-          </div>
+            {/* File Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="fileInput" className=" font-medium">
+                Medical Record File *
+              </Label>
+              <Input
+                id="fileInput"
+                type="file"
+                onChange={handleFileChange}
+                className="h-16 cursor-pointer border-dashed border border-primary file:bg-blue-50 file:text-blue-700 file:font-semibold hover:file:bg-blue-100"
+                required
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="metadata"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Additional Notes
-            </label>
-            <textarea
-              id="metadata"
-              rows="4"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              value={metadata}
-              onChange={(e) => setMetadata(e.target.value)}
-              placeholder="Add any additional information about this record"
-            ></textarea>
-          </div>
+            {/* Additional Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="metadata" className=" font-medium">
+                Additional Notes
+              </Label>
+              <Textarea
+                id="metadata"
+                rows={4}
+                placeholder="Add any additional information about this record"
+                value={metadata}
+                onChange={(e) => setMetadata(e.target.value)}
+                className="focus-visible:ring-primary h-32"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Uploading..." : "Upload Record to Blockchain"}
-          </button>
-        </form>
-      </div>
-    </div>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary hover:bg-primary/90 text-white shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Uploading..." : "Upload Record to Blockchain"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </Card>
   );
 };
 

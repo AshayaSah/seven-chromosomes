@@ -1,5 +1,4 @@
 import { Card, CardContent } from "../ui/card";
-import TiltedCard from "../ui/TiltedCard";
 
 const Services = () => {
   const cardContent = [

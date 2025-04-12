@@ -1,5 +1,9 @@
 // src/components/PatientRecords.jsx
 import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWeb3 } from "../contexts/Web3Context";
 import { downloadFromIPFS } from "../utils/ipfsUtils";
 
@@ -15,6 +19,10 @@ const PatientRecords = () => {
   const [decryptedContent, setDecryptedContent] = useState(null);
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState(null);
+  const [chatHistory, setChatHistory] = useState([
+    "Hi",
+    "Hello! How are you ?",
+  ]);
 
   // Fetch patient records when component mounts
   useEffect(() => {
@@ -116,6 +124,14 @@ const PatientRecords = () => {
 
     try {
       setLoading(true);
+
+      // const questionObj = {
+      //   question: prompt,
+      // },
+      // setChatHistory((prev) => [
+      //   ...prev,
+
+      // ]);
       const response = await fetch(
         "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
         {
@@ -140,6 +156,13 @@ const PatientRecords = () => {
       const data = await response.json();
       console.log(data);
       setAiResponse(data.answer);
+
+      // setChatHistory((prev) => [
+      //   ...prev,
+      //   {
+      //     aiResponse: data.answer,
+      //   },
+      // ]);
     } catch (error) {
       console.error("Error sending data to AI:", error);
     } finally {
@@ -148,141 +171,191 @@ const PatientRecords = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(chatHistory);
+  }, [chatHistory]);
+
   return (
-    <div className="container mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Your Medical Records</h2>
+    <div className="container mx-auto p-6 flex flex-col md:flex-row gap-4">
+      <Card className="w-full md:w-1/3">
+        <CardHeader>
+          <CardTitle>Your Medical Records</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="p-4 bg-destructive/10 text-destructive rounded-md">
+              {error}
+            </div>
+          )}
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
+          {loading && !records.length ? (
+            <div className="flex justify-center my-8">
+              <Skeleton className="h-12 w-12 rounded-full" />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {/* Records List */}
+              <div className="md:w-full space-y-4">
+                <h3 className="text-lg font-semibold">Available Records</h3>
 
-      {loading && !records.length ? (
-        <div className="flex justify-center my-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      ) : (
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Records List */}
-          <div className="md:w-1/2">
-            <h3 className="text-lg font-medium mb-4">Available Records</h3>
+                {records.length === 0 ? (
+                  <Card>
+                    <CardContent className="text-center text-muted-foreground">
+                      No records found
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card className="divide-y gap-0 py-0">
+                    {records.map((record) => (
+                      <div
+                        key={record.id}
+                        className={`p-4 cursor-pointer hover:bg-muted/50 ${
+                          selectedRecord?.id === record.id ? "bg-muted" : ""
+                        }`}
+                        onClick={() => handleRecordClick(record)}
+                      >
+                        <h4 className="font-medium">{record.recordType}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Dr. {record.doctorName}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {record.timestamp}
+                        </p>
+                      </div>
+                    ))}
+                  </Card>
+                )}
 
-            {records.length === 0 ? (
-              <div className="text-center p-4 border border-gray-200 rounded-md">
-                No records found
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={fetchRecords}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Refresh Records"}
+                </Button>
               </div>
-            ) : (
-              <div className="border border-gray-200 rounded-md divide-y">
-                {records.map((record) => (
-                  <div
-                    key={record.id}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 ${
-                      selectedRecord?.id === record.id ? "bg-blue-50" : ""
-                    }`}
-                    onClick={() => handleRecordClick(record)}
-                  >
-                    <h4 className="font-medium">{record.recordType}</h4>
-                    <p className="text-sm text-gray-600">
-                      Dr. {record.doctorName}
-                    </p>
-                    <p className="text-xs text-gray-500">{record.timestamp}</p>
+
+              {/* Record Viewer */}
+              <div className="md:w-full space-y-4">
+                <h3 className="text-lg font-semibold">Record Viewer</h3>
+                {selectedRecord ? (
+                  <Card>
+                    <CardContent className="space-y-4">
+                      <h4 className="text-lg font-medium">
+                        {selectedRecord.recordType}
+                      </h4>
+                      <div className="space-y-1 text-sm">
+                        <p>
+                          <strong>Doctor:</strong> {selectedRecord.doctorName}
+                        </p>
+                        <p>
+                          <strong>Date:</strong> {selectedRecord.timestamp}
+                        </p>
+                        <p>
+                          <strong>IPFS Hash:</strong>{" "}
+                          <span className="text-xs font-mono">
+                            {selectedRecord.recordHash}
+                          </span>
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t space-y-2">
+                        <label className="text-sm font-medium">
+                          Decryption Key
+                        </label>
+                        <Input
+                          type="password"
+                          value={decryptionKey}
+                          onChange={(e) => setDecryptionKey(e.target.value)}
+                          placeholder="Enter your personal decryption key"
+                        />
+
+                        <Button
+                          className="w-full"
+                          onClick={handleDecrypt}
+                          disabled={loading}
+                        >
+                          {loading ? "Decrypting..." : "Decrypt Record"}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card>
+                    <CardContent className="text-center text-muted-foreground p-8">
+                      Select a record from the list to view details
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* File Content  */}
+      <Card className="w-full md:w-2/3 flex flex-col p-6">
+        <Card className="h-1/4 pb-6 ">
+          <h5 className="pl-6 pb-2 font-medium border-b">Decrypted Content:</h5>
+          <CardContent className="overflow-auto">
+            {decryptedContent ?? (
+              <p className="overflow-auto">{decryptedContent}</p>
+            )}
+          </CardContent>
+        </Card>
+        <Card className=" p-4 h-3/4">
+          <CardContent className="space-y-4 flex flex-col justify-between h-full">
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                  Hello! How can I help you today?
+                </div>
+              </div>
+
+              {/* {aiResponse && (
+                <div className="flex justify-start">
+                  <div className="bg-blue-100 text-blue-800 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                    {aiResponse}
                   </div>
-                ))}
-              </div>
-            )}
-
-            <button
-              className="mt-4 w-full py-2 px-4 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-              onClick={fetchRecords}
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "Refresh Records"}
-            </button>
-          </div>
-
-          {/* Record Viewer */}
-          <div className="md:w-1/2">
-            <h3 className="text-lg font-medium mb-4">Record Viewer</h3>
-
-            {selectedRecord ? (
-              <div className="border border-gray-200 rounded-md p-4">
-                <h4 className="font-medium text-lg">
-                  {selectedRecord.recordType}
-                </h4>
-                <div className="my-2 space-y-1">
-                  <p className="text-sm">
-                    <span className="font-medium">Doctor:</span>{" "}
-                    {selectedRecord.doctorName}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-medium">Date:</span>{" "}
-                    {selectedRecord.timestamp}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-medium">IPFS Hash:</span>{" "}
-                    <span className="text-xs font-mono">
-                      {selectedRecord.recordHash}
-                    </span>
-                  </p>
                 </div>
+              )} */}
 
-                <div className="mt-4 pt-4 border-t">
-                  <label className="block text-sm font-medium mb-2">
-                    Decryption Key
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md mb-3"
-                    value={decryptionKey}
-                    onChange={(e) => setDecryptionKey(e.target.value)}
-                    placeholder="Enter your personal decryption key"
-                  />
+              {chatHistory &&
+                chatHistory.map((chat, index) => {
+                  const chatIndex = index + 1;
 
-                  <button
-                    className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-                    onClick={handleDecrypt}
-                    disabled={loading}
-                  >
-                    {loading ? "Decrypting..." : "Decrypt Record"}
-                  </button>
-                </div>
-                {console.log(decryptedContent)}
-              </div>
-            ) : (
-              <div className="border border-gray-200 rounded-md p-8 text-center text-gray-500">
-                Select a record from the list to view details
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {decryptedContent && (
-        <div className="mt-4 pt-4 border-t flex flex-col space-y-2">
-          <h5 className="font-medium mb-2">Decrypted Content:</h5>
-          <p>{decryptedContent}</p>
-          <input
-            type="text"
-            placeholder="Ask to AI .. ?"
-            value={prompt}
-            disabled={loading}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-          <button
-            onClick={handleSendToAi}
-            disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-          >
-            {loading ? "Sending to AI ...." : "Send to AI"}
-          </button>
-        </div>
-      )}
-      {aiResponse && (
-        <div className="mt-4 pt-4 border-t">
-          <h5 className="font-medium mb-2">AI Response:</h5>
-          <p>{aiResponse}</p>
-        </div>
-      )}
+                  return chatIndex % 2 !== 0 ? (
+                    <div key={index} className="flex justify-end">
+                      <div className="bg-blue-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                        {chat}
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={index} className="flex justify-start">
+                      <div className="bg-secondary rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                        {chat}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <div className="flex items-baseline gap-2">
+              <Input
+                type="text"
+                placeholder="Ask something..."
+                value={prompt}
+                disabled={loading}
+                onChange={(e) => setPrompt(e.target.value)}
+              />
+              <Button onClick={handleSendToAi} disabled={loading}>
+                {loading ? "..." : "Send"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </Card>
     </div>
   );
 };

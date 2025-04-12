@@ -10,12 +10,12 @@ const Hero = () => {
     <div className="w-full bg-muted py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
         {/* Left Content */}
-        <div className="z-10 ml-12 text-center md:text-left">
+        <div className="z-10 md:ml-12 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight">
             Secure Medical Records <br />
             <span className="text-primary">on the Blockchain</span>
           </h1>
-          <p className="mt-4 text-muted-foreground max-w-md">
+          <p className="mt-4 text-muted-foreground w-full md:w-md">
             MedChain provides a secure, transparent, and patient-controlled
             platform for managing medical records using blockchain technology.
           </p>
