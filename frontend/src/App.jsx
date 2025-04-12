@@ -11,6 +11,8 @@ import { Web3Provider } from "./contexts/Web3Context";
 // Components
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import AdminDashboard from "./components/AdminDashboard";
+import RegisterDoctor from "./components/RegisterDoctor";
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<RegisterDoctor />} />
         </Routes>
       </Router>
     </Web3Provider>

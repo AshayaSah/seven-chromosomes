@@ -1,7 +1,7 @@
 // src/contexts/Web3Context.js
 import React, { useState, useEffect, createContext, useContext } from "react";
 import Web3 from "web3";
-import MedicalRecordsABI from "../../../medicalrecordcontract/build/contracts/MedicalRecords.json";
+import MedicalRecordsABI from "../../../test-contract/build/contracts/MedicalRecords.json";
 
 const Web3Context = createContext();
 
@@ -16,7 +16,7 @@ export const Web3Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [isDoctor, setIsDoctor] = useState(false);
   const [isPatient, setIsPatient] = useState(false);
-
+  const [isAdmin, setIsAdmin] = useState();
   // Initialize Web3
   useEffect(() => {
     const initWeb3 = async () => {
@@ -52,6 +52,16 @@ export const Web3Provider = ({ children }) => {
                 .isDoctor(accs[0])
                 .call();
               setIsDoctor(doctorStatus);
+
+              try {
+                // Check if current user is admin
+                const isCurrentUserAdmin = await medicalRecords.methods
+                  .isAdmin(accs[0])
+                  .call();
+                setIsAdmin(isCurrentUserAdmin);
+              } catch (error) {
+                setIsAdmin(error);
+              }
 
               // For patient, we'll need to check if they're registered
               try {
@@ -104,6 +114,12 @@ export const Web3Provider = ({ children }) => {
             .call();
           setIsDoctor(doctorStatus);
 
+          // Check admin status
+          const isCurrentUserAdmin = await medicalRecordsContract.methods
+            .isAdmin(accounts[0])
+            .call();
+          setIsAdmin(isCurrentUserAdmin);
+
           try {
             await medicalRecordsContract.methods
               .getPatientDetails()
@@ -126,6 +142,7 @@ export const Web3Provider = ({ children }) => {
     error,
     isDoctor,
     isPatient,
+    isAdmin,
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
