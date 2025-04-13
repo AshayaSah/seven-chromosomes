@@ -6,6 +6,9 @@ from src.config import logger
 import os
 import re
 
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 def load_data():
     base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../trainingdata'))
     logger.info(f"Loading data from: {base_path}")
@@ -62,6 +65,8 @@ def identification_helper(dis, description, precautions, medications, diets, wor
     logger.info(f"Workouts found: {wrkout}")
 
     return desc, pre, med, die, wrkout
+
+
 
 def get_predicted_value(patient_symptoms, svc):
     logger.info(f"Getting predicted value for symptoms: {patient_symptoms}")

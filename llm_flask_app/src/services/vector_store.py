@@ -1,4 +1,3 @@
-# src/services/vector_store.py
 import os
 from typing import List
 from langchain_community.vectorstores import FAISS
@@ -7,14 +6,16 @@ import shutil
 from src.config import logger
 
 
-def get_vector_store(text_chunks: List[str], user_name: str |None = None):
+def get_vector_store(text_chunks: List[str], user_name: str | None = None):
     embeddings = get_embeddings()
     try:
-        logger.info(f"Creating vector store with {len(text_chunks)} chunks for user: {user_name or 'anonymous'}")
+        logger.info(
+            f"Creating vector store with {len(text_chunks)} chunks for user: {user_name or 'anonymous'}"
+        )
         vector_store = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
         user_folder = user_name if user_name else "anonymous"
         save_path = os.path.join("llm_flask_app/faissdb", user_folder)
-        
+
         os.makedirs(save_path, exist_ok=True)
         vector_store.save_local(save_path)
         logger.info(f"Vector store saved to {save_path}")
@@ -22,6 +23,7 @@ def get_vector_store(text_chunks: List[str], user_name: str |None = None):
     except Exception as e:
         logger.error(f"Error creating vector store: {str(e)}")
         raise Exception(f"Error creating vector store: {e}")
+
 
 def clear_user_vector_store(user_name: str):
     try:

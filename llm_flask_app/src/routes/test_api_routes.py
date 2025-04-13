@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from src.services.content_loader import load_content, get_text_chunks
 from src.services.vector_store import get_vector_store, clear_user_vector_store
-from src.services.content_loader_updated import get_texts_chunks, load_contents
+from content_loader_updated import get_texts_chunks, load_contents
 from src.services.llm_processor import get_conversational_chain
 from src.services.history_manager import (
     save_conversation_to_redis,
