@@ -37,7 +37,7 @@ def process_content():
         # Load text chunks if source is provided
         text_chunks = []
         if source:
-            logger.info(f"Loading content from source: {source} (type: {source_type or 'unknown'})")
+            logger.info(f"Loading content from sourceMyth: {source} (type: {source_type or 'unknown'})")
             documents = load_content(source, source_type or "unknown")
             if not documents:
                 logger.warning(f"No content loaded from source: {source}")
@@ -72,15 +72,16 @@ def process_content():
         chat_history.add_message(AIMessage(content=answer))
         save_session_chat_history(user_name, chat_history)
 
-        # Save to global history
+        # Save to user-specific conversation history
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         conversation_entry = (
             user_question,
             answer,
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            timestamp,
             str(source) if source else "existing_vector_store",
             source_type if source_type else "unknown"
         )
-        save_conversation_to_redis(conversation_entry)
+        save_conversation_to_redis(user_name, conversation_entry)
         logger.info(f"Conversation saved to Redis for user: {user_name}")
 
         return jsonify({
@@ -88,7 +89,7 @@ def process_content():
             "answer": answer,
             "source": source or "existing_vector_store",
             "source_type": source_type or "unknown",
-            "timestamp": conversation_entry[2]
+            "timestamp": timestamp
         }), 200
     except Exception as e:
         error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
@@ -171,7 +172,15 @@ def process_file_content():
         save_session_chat_history(username, chat_history)
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        save_conversation_to_redis((question, answer, timestamp, str(source), source_type))
+        conversation_entry = (
+            question,
+            answer,
+            timestamp,
+            str(source),
+            source_type
+        )
+        save_conversation_to_redis(username, conversation_entry)
+        logger.info(f"Conversation saved to Redis for user: {username}")
 
         return jsonify({
             "status": "success",
@@ -185,8 +194,5 @@ def process_file_content():
         }), 200
 
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
+        logger.error(f"Error: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Internal server error"}), 500
-
-
-
