@@ -358,7 +358,8 @@ const PatientRecords = () => {
                 disabled={loading}
                 onChange={(e) => setPrompt(e.target.value)}
               />
-              <Button onClick={handleSendToAi} disabled={loading}>
+
+              <Button onClick={handleSendToAi} disabled={loading || !fileBlob}>
                 {loading ? "..." : "Send"}
               </Button>
             </div>

@@ -1,40 +1,44 @@
 import { Card, CardContent } from "../ui/card";
+import Magnet from "../ui/magnet";
 
 const StatsSection = () => {
   return (
     <div className="container mx-auto py-16 px-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {/* Stat 1 */}
-        <Card>
-          <CardContent className="p-6 text-center">
-            <div className="flex justify-center mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-              >
-                <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path>
-                <line x1="8" y1="16" x2="8.01" y2="16"></line>
-                <line x1="8" y1="20" x2="8.01" y2="20"></line>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                <line x1="12" y1="22" x2="12.01" y2="22"></line>
-                <line x1="16" y1="16" x2="16.01" y2="16"></line>
-                <line x1="16" y1="20" x2="16.01" y2="20"></line>
-              </svg>
-            </div>
-            <h3 className="text-3xl font-bold text-primary">BlockChain</h3>
-            <p className="text-muted-foreground">Secure Records</p>
-          </CardContent>
-        </Card>
+        <Magnet padding={50} disabled={false} magnetStrength={5}>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-primary"
+                >
+                  <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path>
+                  <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                  <line x1="8" y1="20" x2="8.01" y2="20"></line>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  <line x1="12" y1="22" x2="12.01" y2="22"></line>
+                  <line x1="16" y1="16" x2="16.01" y2="16"></line>
+                  <line x1="16" y1="20" x2="16.01" y2="20"></line>
+                </svg>
+              </div>
+              <h3 className="text-3xl font-bold text-primary">BlockChain</h3>
+              <p className="text-muted-foreground">Secure Records</p>
+            </CardContent>
+          </Card>
+        </Magnet>
 
         {/* Stat 2 */}
+        <Magnet padding={50} disabled={false} magnetStrength={5}>
         <Card>
           <CardContent className="p-6 text-center">
             <div className="flex justify-center mb-4">
@@ -58,8 +62,10 @@ const StatsSection = () => {
             <p className="text-muted-foreground">AI Prediction Accuracy</p>
           </CardContent>
         </Card>
+        </Magnet>
 
         {/* Stat 3 */}
+        <Magnet padding={50} disabled={false} magnetStrength={5}>
         <Card>
           <CardContent className="p-6 text-center">
             <div className="flex justify-center mb-4">
@@ -85,8 +91,10 @@ const StatsSection = () => {
             <p className="text-muted-foreground">For Patients</p>
           </CardContent>
         </Card>
+        </Magnet>
 
         {/* Stat 4 */}
+        <Magnet padding={50} disabled={false} magnetStrength={5}>
         <Card>
           <CardContent className="p-6 text-center">
             <div className="flex justify-center mb-4">
@@ -112,6 +120,7 @@ const StatsSection = () => {
             <p className="text-muted-foreground">For Doctors</p>
           </CardContent>
         </Card>
+        </Magnet>s
       </div>
     </div>
   );

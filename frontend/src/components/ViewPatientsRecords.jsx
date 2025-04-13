@@ -1,5 +1,5 @@
 // src/components/ViewPatientsRecords.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,75 +126,30 @@ const ViewPatientsRecords = () => {
     }
   };
 
-  // Sending the medical data to AI
-  // const handleSendToAi = async () => {
-  //   console.log("The decrypted content: ", decryptedContent);
-  //   console.log("Current Account", currentAccount);
-
-  //   try {
-  //     setLoading(true);
-
-  //     chatHistory.push(prompt);
-
-  //     // Step 1: Convert Blob to Text
-  //     // const decryptedContent = await fileBlob.text();
-  //     // console.log(decryptedContent);
-  //     console.log(prompt);
-
-  //     const response = await fetch(
-  //       "https://three-masks-joke.loca.lt/api/predict-medicine",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           text: prompt,
-  //         }),
-  //       }
-  //     );
-
-  //     // Check if the response is OK (status in the range 200-299)
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     // const data = await response.text;
-  //     console.log(await response);
-  //     // setAiResponse(data.answer);
-
-  //     // chatHistory.push(data.answer);
-  //   } catch (error) {
-  //     console.error("Error sending data to AI:", error);
-  //   } finally {
-  //     setPrompt("");
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleSendToAi = async () => {
     setLoading(true);
-    chatHistory.push(prompt);
 
-    const API_URL =
-      "https://normally-poetic-ferret.ngrok-free.app/api/predict-medicine";
+    // Create a new array with the existing chat history plus the new prompt
+    setChatHistory((prevHistory) => [...prevHistory, prompt]);
 
-    const requestData = {
-      text: prompt,
-    };
+    try {
+      const API_URL =
+        "https://normally-poetic-ferret.ngrok-free.app/api/predict-medicine";
 
-    fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    })
-      .then(async (response) => {
-        const text = await response.text();
+      const requestData = {
+        text: prompt,
+      };
 
-        try {
-          // Optional cleanup if localtunnel injects characters before/after JSON
+      fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      })
+        .then(async (response) => {
+          const text = await response.text();
+
           const cleanText = text
             .trim()
             .replace(/^[^\[{]([\[{].[\]}])[^}\]]*$/, "$1");
@@ -204,19 +159,102 @@ const ViewPatientsRecords = () => {
 
           const data = JSON.parse(sanitizedText);
           console.log("This is data : ", data);
-          // const aiResponse = JSON.stringify(data, null, 2);
 
-          // console.log(JSON.stringify(data, null, 2));
+          if (data.error) {
+            setChatHistory((prevHistory) => [...prevHistory, data.error]);
+          }
+
+          // Format the response as a readable string with line breaks
+          const formattedResponse = formatAIResponseToString(data);
+
           setLoading(false);
-          chatHistory.push(data.description);
-        } catch (err) {
-          console.error("JSON parse error:", err.message);
-        }
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err.message);
-      });
+
+          // Add the formatted string to chat history
+          setChatHistory((prevHistory) => [...prevHistory, formattedResponse]);
+        })
+        .catch((err) => {
+          console.error("Fetch error:", err.message);
+        });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPrompt("");
+      setLoading(false);
+    }
   };
+
+  //Formatting the object to a string
+  const formatAIResponseToString = (data) => {
+    let formattedString = "";
+
+    formattedString += `Predicted Disease: ${data.predicted_disease}\n\n`;
+
+    formattedString += `Description: \n${data.description}\n\n`;
+
+    formattedString += "Detected Symptoms:\n";
+    data.detected_symptoms.forEach((symptom) => {
+      formattedString += `- ${symptom}\n`;
+    });
+    formattedString += "\n";
+
+    formattedString += "Recommended Medications:\n";
+    try {
+      const medicationsText = data.medications[0];
+      const cleanMedicationsText = medicationsText.replace(/'/g, '"');
+      const medications = JSON.parse(cleanMedicationsText);
+
+      medications.forEach((med) => {
+        formattedString += `- ${med}\n`;
+      });
+    } catch (e) {
+      // If parsing fails, use the array directly
+      data.medications.forEach((med) => {
+        formattedString += `- ${med}\n`;
+      });
+    }
+    formattedString += "\n";
+
+    formattedString += "Precautions:\n";
+    data.precautions.forEach((precaution) => {
+      formattedString += `- ${precaution}\n`;
+    });
+    formattedString += "\n";
+
+    formattedString += "Diet Recommendations:\n";
+    try {
+      const dietText = data.diet[0];
+      const cleanDietText = dietText.replace(/'/g, '"');
+      const diet = JSON.parse(cleanDietText);
+
+      diet.forEach((item) => {
+        formattedString += `- ${item}\n`;
+      });
+    } catch (e) {
+      // If parsing fails, use the array directly
+      data.diet.forEach((item) => {
+        formattedString += `- ${item}\n`;
+      });
+    }
+    formattedString += "\n";
+
+    formattedString += "Workout/Lifestyle Recommendations:\n";
+    data.workout.forEach((item) => {
+      formattedString += `- ${item}\n`;
+    });
+
+    return formattedString;
+  };
+
+  // Create a ref for the chat container
+  const chatContainerRef = useRef(null);
+
+  // Auto-scroll to bottom when chat history changes
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   return (
     <div className="container mx-auto p-6 flex flex-col md:flex-row gap-4">
@@ -359,37 +397,42 @@ const ViewPatientsRecords = () => {
             <FileViewer fileBlob={fileBlob} />
           </CardContent>
         </Card>
+
         <Card className="p-4 h-full flex flex-col">
           <h5 className="pl-6 pb-2 font-medium border-b">
             Disease Prediction AI
           </h5>
-          <CardContent className="flex flex-col overflow-auto h-full p-0 pt-4">
-            {/* Chat history - will expand to fill available space */}
-            <div className="flex-grow overflow-y-auto space-y-3 mb-4 pr-2">
-              <div className="flex justify-start">
+          <CardContent className="flex flex-col justify-evenly h-full p-0 pt-4">
+            {/* Chat history - with fixed height and auto-scroll */}
+            <div
+              ref={chatContainerRef}
+              className="flex-grow overflow-y-auto space-y-3 mb-4 pr-2 max-h-96" // Set a max height
+              style={{ scrollBehavior: "smooth" }}
+            >
+              <div className="flex flex-col gap-2 justify-start">
                 <div className="bg-gray-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
                   Hello! How can I help you today?
                 </div>
+
+                {chatHistory &&
+                  chatHistory.map((chat, index) => {
+                    const chatIndex = index + 1;
+
+                    return chatIndex % 2 !== 0 ? (
+                      <div key={index} className="flex justify-end">
+                        <div className="bg-blue-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                          {chat}
+                        </div>
+                      </div>
+                    ) : (
+                      <div key={index} className="flex justify-start">
+                        <div className="bg-secondary rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                          <div style={{ whiteSpace: "pre-wrap" }}>{chat}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
-
-              {chatHistory &&
-                chatHistory.map((chat, index) => {
-                  const chatIndex = index + 1;
-
-                  return chatIndex % 2 !== 0 ? (
-                    <div key={index} className="flex justify-end">
-                      <div className="bg-blue-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
-                        {chat}
-                      </div>
-                    </div>
-                  ) : (
-                    <div key={index} className="flex justify-start">
-                      <div className="bg-secondary rounded-lg px-4 py-2 text-sm max-w-[75%]">
-                        {chat}
-                      </div>
-                    </div>
-                  );
-                })}
             </div>
 
             {/* Input area - fixed at bottom */}
@@ -400,6 +443,11 @@ const ViewPatientsRecords = () => {
                 value={prompt}
                 disabled={loading}
                 onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !loading) {
+                    handleSendToAi();
+                  }
+                }}
               />
               <Button onClick={handleSendToAi} disabled={loading}>
                 {loading ? "..." : "Send"}

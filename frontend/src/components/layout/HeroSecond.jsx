@@ -1,6 +1,7 @@
 import { Button } from "../ui/button";
 import { FaArrowRight } from "react-icons/fa";
 import HeroBgImage from "../../assets/second_texture.png"; // adjust path if needed
+import Magnet from "../ui/magnet";
 
 const HeroAI = () => {
   return (
@@ -84,11 +85,15 @@ const HeroAI = () => {
             business process
           </p>
           <div className="mt-6 flex items-center gap-4 justify-center md:justify-start">
-            <Button className="bg-white text-[#201749] hover:bg-gray-200 transition-all px-6 py-3 font-medium rounded-lg">
-              Get started
-            </Button>
+            <Magnet padding={50} disabled={false} magnetStrength={5}>
+              <Button className="bg-white text-[#201749] hover:bg-gray-200 transition-all px-6 py-3 font-medium rounded-lg">
+                Get started
+              </Button>
+            </Magnet>
             <div className="p-4 border border-white/20 rounded-full flex items-center justify-center hover:bg-white/5 transition-all cursor-pointer">
-              <FaArrowRight />
+              <Magnet padding={50} disabled={false} magnetStrength={5}>
+                <FaArrowRight />
+              </Magnet>
             </div>
           </div>
         </div>

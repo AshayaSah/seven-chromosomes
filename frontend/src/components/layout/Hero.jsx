@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Orb from "../ui/orb";
 import HeroImage from "../../assets/hero_image.jpg";
 import HeroBgImage from "../../assets/grey-texture-background.jpg";
+import Magnet from "../ui/magnet";
 
 const Hero = () => {
   const { currentAccount, connectWallet, isDoctor, isPatient, isAdmin } =
@@ -44,38 +45,50 @@ const Hero = () => {
 
           <div className="mt-6 flex justify-center md:justify-start">
             {!currentAccount ? (
-              <Button
-                onClick={connectWallet}
-                className="px-6 py-3  flex items-center "
-              >
-                Connect Wallet to Get Started
-              </Button>
+              <Magnet padding={50} disabled={false} magnetStrength={5}>
+                <Button
+                  onClick={connectWallet}
+                  className="px-6 py-3  flex items-center "
+                >
+                  Connect Wallet to Get Started
+                </Button>
+              </Magnet>
             ) : isDoctor ? (
               <div className="flex gap-6">
                 <Link
                   to="/add-patient-record"
                   className="py-3  flex items-center "
                 >
-                  <Button>Add Patient Record</Button>
+                  <Magnet padding={50} disabled={false} magnetStrength={5}>
+                    <Button>Add Patient Record</Button>
+                  </Magnet>
                 </Link>
                 <Link
                   to="/view-patients-records"
                   className="py-3  flex items-center "
                 >
-                  <Button>View Patients Records</Button>
+                  <Magnet padding={50} disabled={false} magnetStrength={5}>
+                    <Button>View Patients Records</Button>
+                  </Magnet>
                 </Link>
               </div>
             ) : isAdmin ? (
               <Link to="/register-doctor" className="py-3  flex items-center ">
-                <Button>Register Doctor</Button>
+                <Magnet padding={50} disabled={false} magnetStrength={5}>
+                  <Button>Register Doctor</Button>
+                </Magnet>
               </Link>
             ) : isPatient ? (
               <Link to="/records" className="py-3  flex items-center ">
-                <Button>View Your Medical Records</Button>
+                <Magnet padding={50} disabled={false} magnetStrength={5}>
+                  <Button>View Your Medical Records</Button>
+                </Magnet>
               </Link>
             ) : !isPatient && !isDoctor ? (
               <Link to="/register-patient" className="py-3  flex items-center ">
-                <Button>Register as Patient</Button>
+                <Magnet padding={50} disabled={false} magnetStrength={5}>
+                  <Button>Register as Patient</Button>
+                </Magnet>
               </Link>
             ) : null}
           </div>
