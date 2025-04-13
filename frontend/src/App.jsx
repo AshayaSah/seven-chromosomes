@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.js
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Web3Provider } from "./contexts/Web3Context";
+import { ThemeProvider } from "@/contexts/ThemeProvider";
+
+// Components
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import RegisterDoctor from "./components/RegisterDoctor";
+import RegisterPatient from "./components/RegisterPatient";
+import AddPatientRecord from "./components/AddPatientRecord";
+import PatientRecords from "./components/PatientRecords";
+import HomePage from "./pages/HomePage";
+import Topbar from "./components/layout/Topbar";
+import ViewPatientsRecords from "./components/ViewPatientsRecords";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Web3Provider>
+      <ThemeProvider>
+        <Router>
+          <Topbar></Topbar>
+          <Navbar />
+
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/register-doctor" element={<RegisterDoctor />} />
+            <Route path="/register-patient" element={<RegisterPatient />} />
+            <Route path="/add-patient-record" element={<AddPatientRecord />} />
+            <Route
+              path="/view-patients-records"
+              element={<ViewPatientsRecords />}
+            />
+            <Route path="/records" element={<PatientRecords />} />
+
+            {/* Redirecting to HomePage for Illigal Routes  */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </Web3Provider>
+  );
 }
 
-export default App
+export default App;
