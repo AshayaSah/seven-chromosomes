@@ -11,4 +11,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    "process.env": {
+      IPFS_URL: "http://127.0.0.1:8080/ipfs",
+      PATIENT_API:
+        "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
+      DOCTOR_API:
+        "https://normally-poetic-ferret.ngrok-free.app/api/predict-medicine",
+    },
+  },
 });

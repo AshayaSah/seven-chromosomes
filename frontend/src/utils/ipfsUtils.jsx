@@ -49,7 +49,9 @@ export const uploadToIPFS = async (file) => {
 // };
 
 export const downloadFromIPFS = async (ipfsHash) => {
-  const ipfsUrl = `http://127.0.0.1:8080/ipfs/${ipfsHash}`;
+  const url = process.env.IPFS_URL;
+  // console.log(url);
+  const ipfsUrl = `${url}/${ipfsHash}`;
 
   try {
     const response = await fetch(ipfsUrl);

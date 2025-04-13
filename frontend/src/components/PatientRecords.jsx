@@ -139,23 +139,20 @@ const PatientRecords = () => {
 
       // Step 1: Convert Blob to Text
       const decryptedContent = await fileBlob.text();
-      console.log(decryptedContent);
+      // console.log(decryptedContent);
 
-      const response = await fetch(
-        "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            source: decryptedContent,
-            source_type: "raw",
-            question: prompt,
-            username: currentAccount,
-          }),
-        }
-      );
+      const response = await fetch(process.env.PATIENT_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source: decryptedContent,
+          source_type: "raw",
+          question: prompt,
+          username: currentAccount,
+        }),
+      });
 
       // Check if the response is OK (status in the range 200-299)
       if (!response.ok) {
@@ -163,7 +160,8 @@ const PatientRecords = () => {
       }
 
       const data = await response.json();
-      console.log(data);
+
+      // console.log(data);
       setAiResponse(data.answer);
 
       chatHistory.push(data.answer);
@@ -174,10 +172,6 @@ const PatientRecords = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    console.log(chatHistory);
-  }, [chatHistory]);
 
   return (
     <div className="container mx-auto p-6 flex flex-col md:flex-row gap-4">

@@ -134,7 +134,7 @@ const ViewPatientsRecords = () => {
 
     try {
       const API_URL =
-        "https://normally-poetic-ferret.ngrok-free.app/api/predict-medicine";
+      process.env.DOCTOR_API;
 
       const requestData = {
         text: prompt,
