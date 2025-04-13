@@ -5,10 +5,51 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from src.config import logger
 
 
+# def load_content(source: Union[str, List[str]], source_type: str) -> List[Document]:
+#     try:
+#         logger.info(f"Loading content from {source_type}: {source}")
+#         # Ensure sources is a list
+#         sources = [source] if isinstance(source, str) else source
+#         if not isinstance(sources, list):
+#             logger.error("Source must be a string or list of strings")
+#             raise ValueError("Source must be a string or list of strings")
+        
+#         documents = []
+#         if source_type == "pdf":
+#             for src in sources:
+#                 logger.info(f"Loading PDF from: {src}")
+#                 loader = PyPDFLoader(src)
+#                 documents.extend(loader.load())
+#         elif source_type == "web":
+#             logger.info(f"Loading web content from: {sources}")
+#             loader = WebBaseLoader(sources)
+#             documents.extend(loader.load())
+#         elif source_type == "text":
+#             for src in sources:
+#                 logger.info(f"Loading text from: {src}")
+#                 loader = TextLoader(src)
+#                 documents.extend(loader.load())
+#         elif source_type == "raw":
+#             for src in sources:
+#                 logger.info(f"Processing raw content: {src}")
+#                 documents.append(
+#                     Document(page_content=src, metadata={"source": "raw_input"})
+#                 )
+#         else:
+#             logger.error(f"Unsupported source type: {source_type}")
+#             raise ValueError(f"Unsupported source type: {source_type}")
+        
+#         logger.info(f"Loaded {len(documents)} documents from {source_type} source(s)")
+#         return documents
+
+#     except Exception as e:
+#         logger.error(f"Error loading content: {str(e)}")
+#         raise Exception(f"Error loading content: {e}")
+
+
 def load_content(source: Union[str, List[str]], source_type: str) -> List[Document]:
     try:
         logger.info(f"Loading content from {source_type}: {source}")
-        # Ensure sources is a list
         sources = [source] if isinstance(source, str) else source
         if not isinstance(sources, list):
             logger.error("Source must be a string or list of strings")
@@ -19,7 +60,10 @@ def load_content(source: Union[str, List[str]], source_type: str) -> List[Docume
             for src in sources:
                 logger.info(f"Loading PDF from: {src}")
                 loader = PyPDFLoader(src)
-                documents.extend(loader.load())
+                loaded_docs = loader.load()
+                if not loaded_docs:
+                    logger.warning(f"No documents loaded from {src}")
+                documents.extend(loaded_docs)
         elif source_type == "web":
             logger.info(f"Loading web content from: {sources}")
             loader = WebBaseLoader(sources)
@@ -45,7 +89,7 @@ def load_content(source: Union[str, List[str]], source_type: str) -> List[Docume
     except Exception as e:
         logger.error(f"Error loading content: {str(e)}")
         raise Exception(f"Error loading content: {e}")
-
+    
 def get_text_chunks(documents: List[Document]) -> List[str]:
     try:
         logger.info(f"Splitting {len(documents)} documents into chunks")

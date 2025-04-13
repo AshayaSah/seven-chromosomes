@@ -20,6 +20,7 @@ def get_embeddings():
         raise
 
 
+
 def get_chat_model():
     try:
         logger.info("Initializing chat model.")
@@ -39,7 +40,7 @@ def get_conversational_chain(retriever):
         logger.info("Creating conversational chain with history support.")
         model = get_chat_model()
 
-        # Contextualize question prompt
+            # Contextualize question prompt
         contextualize_q_system_prompt = """Given a chat history and the latest user question \
                 which might reference context in the chat history, formulate a standalone question \
                 which can be understood without the chat history. Do NOT answer the question, \
@@ -56,11 +57,12 @@ def get_conversational_chain(retriever):
         )
         logger.info("History-aware retriever created.")
 
-        # QA prompt with chat history
-        qa_system_prompt = """You are an assistant for question-answering tasks. \
-            Use the following pieces of retrieved context to answer the question. \
-            If you don't know the answer, just say that you don't know. \
-            Keep the answer concise and limited to three sentences.\n\n{context}"""
+        # QA prompt with chat history for medical assistance
+        qa_system_prompt = """You are a medical assistant specialized in providing health-related information. \
+        Use the following pieces of retrieved context to answer the user's medical question. \
+        Ensure that your response is accurate, concise, and limited to three sentences. \
+        If you are unsure about the answer or if the information is not available, clearly state that you do not know. \
+        Always prioritize the user's health and safety in your responses.\n\n{context}"""
 
         qa_prompt = ChatPromptTemplate.from_messages(
             [

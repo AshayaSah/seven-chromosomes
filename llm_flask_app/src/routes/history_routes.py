@@ -47,7 +47,7 @@ def save_history(filename=None):
         return jsonify({"error": str(e)}), 500
 
 
-@history_bp.route("/clear-redis", methods=["DELETE"])
+@history_bp.route("/clear-history-text", methods=["DELETE"])
 def clear_history():
     try:
         logger.info("Clearing conversation history.")
