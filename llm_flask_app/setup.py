@@ -7,7 +7,7 @@ with open("requirements.txt", "r") as f:
 setup(
     name="llm_flask_app",
     version="0.1.0",
-    description="A Flask-based LLM application with RAG and chat history",
+    description="A Flask-base application with the medicine prediction model",
     author="Seven Chromosome",
     author_email="rabindraabasnet@gmail.com", 
     packages=find_packages(where="."),  
