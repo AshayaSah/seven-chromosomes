@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+
 def create_app():
     app = Flask(__name__)
     # CORS(app)
@@ -22,5 +23,5 @@ def create_app():
 
 if __name__ == "__main__":
     app: Flask = create_app()
-    USER_AGENT = USER_AGENT
+    USER_AGENT = USER_AGENT 
     app.run(debug=DEBUG, host=HOST)
