@@ -1,29 +1,21 @@
-from flask import request, jsonify
+from flask import request, jsonify, Blueprint
 from src.services.content_loader import load_content, get_text_chunks
-from src.services.vector_store import get_vector_store, clear_user_vector_store
-from src.services.content_loader_updated import get_texts_chunks, load_contents
+from src.services.vector_store import get_vector_store
 from src.services.llm_processor import get_conversational_chain
 from src.services.history_manager import (
-    save_conversation_to_redis,
-    get_conversation_history_from_redis,
-    save_history_to_csv,
-    clear_conversation_history_in_redis,
-    get_session_chat_history,
-    save_session_chat_history,
+    get_session_chat_history, save_session_chat_history, save_conversation_to_redis
 )
-from datetime import datetime
-import traceback
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_community.chat_message_histories import RedisChatMessageHistory
-from src.config import logger, api_bp, REDIS_HISTORY_URL
-import re
 from werkzeug.utils import secure_filename
+from datetime import datetime
+from langchain_core.messages import HumanMessage, AIMessage
+from src.config import logger
+import traceback
 from pathlib import Path
-from src.services.recommedmedicine import load_data, load_model, get_predicted_value, identification_helper, extract_symptoms_from_text
+import re
 
+content_bp = Blueprint("content", __name__)
 
-
-@api_bp.route("/process-content", methods=["POST"])
+@content_bp.route("/process-content", methods=["POST"])
 def process_content():
     data = request.get_json()
     source = data.get("source")
@@ -104,98 +96,7 @@ def process_content():
         return jsonify({"error": error_msg}), 500
 
 
-@api_bp.route("/conversation-history", methods=["GET"])
-def get_conversation_history():
-    try:
-        logger.info("Fetching conversation history.")
-        history = get_conversation_history_from_redis()
-        logger.info(f"Retrieved {len(history)} history entries.")
-        return jsonify(
-            [
-                {
-                    "question": q,
-                    "answer": a,
-                    "timestamp": t,
-                    "source": s,
-                    "source_type": st,
-                }
-                for q, a, t, s, st in history
-            ]
-        ), 200
-    except Exception as e:
-        logger.error(f"Error fetching history: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
-@api_bp.route("/save-history", methods=["POST"])
-def save_history(filename=None):
-    data = request.get_json(silent=True) or {}
-    if not filename:
-        filename = data.get("filename", "conversation_history.csv")
-    try:
-        logger.info(f"Saving history to {filename}")
-        result = save_history_to_csv(filename)
-        logger.info(result)
-        return jsonify({"message": result}), 200
-    except Exception as e:
-        logger.error(f"Error saving history to {filename}: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
-@api_bp.route("/clear-redis", methods=["DELETE"])
-def clear_history():
-    try:
-        logger.info("Clearing conversation history.")
-        result = clear_conversation_history_in_redis()
-        logger.info(result)
-        return jsonify({"message": result}), 200
-    except Exception as e:
-        logger.error(f"Error clearing history: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
-@api_bp.route("/clear-history/<username>", methods=["DELETE"])
-def clear_vector_store(username):
-    data = request.get_json(silent=True) or {}
-    username = (data.get("username") or username).lower()
-    if not username:
-        logger.error("Invalid or missing username")
-        return jsonify({"error": "Username is required"}), 400
-    try:
-        logger.info(f"Clearing history for user: {username}")
-        
-        # Clear Redis chat history
-        session_id = f"chat_history:{username}"
-        redis_history = RedisChatMessageHistory(
-            session_id=session_id,
-            url=REDIS_HISTORY_URL
-        )
-        message_count = len(redis_history.messages)
-        logger.info(f"Found {message_count} messages in Redis for {username}")
-        
-        redis_history.clear()
-        
-        if redis_history.messages:
-            remaining_count = len(redis_history.messages)
-            logger.error(f"Failed to clear Redis history for {username}, {remaining_count} messages remain")
-            return jsonify({"error": f"Failed to clear Redis history for {username}"}), 500
-        
-        # Clear vector store (if still needed for embeddings)
-        vector_result = clear_user_vector_store(username)
-        logger.info(f"Vector store cleared: {vector_result}")
-        
-        logger.info(f"Successfully cleared history for user: {username}")
-        return jsonify({
-            "message": f"Chat history and vector store cleared for user {username} (had {message_count} messages)"
-        }), 200
-    except Exception as e:
-        logger.error(f"Error clearing history for {username}: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
-
-
-@api_bp.route("/process-file-content", methods=["POST"])
+@content_bp.route("/process-file-content", methods=["POST"])
 def process_file_content():
     # Set data directory
     data_dir = Path(__file__).parent.parent.parent / "data"  # Resolves to llm_flask_app/data
@@ -286,89 +187,3 @@ def process_file_content():
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
-
-
-@api_bp.route('/test-predict-medicine', methods=['POST'])
-def test_predict_medicine():
-    try:
-        data = request.get_json()
-        symptoms = data.get('symptoms')
-
-        if not symptoms or not isinstance(symptoms, list):
-            return jsonify({"error": "Invalid input format. 'symptoms' must be a list."}), 400
-
-        sym_des, precautions, workout, description, medications, diets = load_data()
-        svc = load_model()
-
-        predicted_disease = get_predicted_value(symptoms, svc)
-
-        dis_des, precautions_list, medications_list, rec_diet, workout_list = identification_helper(
-            predicted_disease, description, precautions, medications, diets, workout
-        )
-
-        return jsonify({
-            "predicted_disease": predicted_disease,
-            "description": dis_des,
-            "precautions": precautions_list[0] if precautions_list else [],
-            "medications": medications_list,
-            "diet": rec_diet,
-            "workout": workout_list
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    
-@api_bp.route('/predict-medicine', methods=['POST'])
-def predict_medicine_model():
-    try:
-        data = request.get_json()
-
-        # Validate input
-        if not data:
-            return jsonify({"error": "No input data provided."}), 400
-
-        # Check if symptoms are provided directly or extract from text
-        if 'symptoms' in data and isinstance(data['symptoms'], list):
-            symptoms = data['symptoms']
-        elif 'text' in data and isinstance(data['text'], str):
-            text = data['text'].strip()
-            if not text:
-                return jsonify({"error": "Empty text provided."}), 400
-            symptoms = extract_symptoms_from_text(text)
-        else:
-            return jsonify({
-                "error": "Invalid input. Provide either 'symptoms' as a list or 'text' as a string."
-            }), 400
-
-        # Check if any symptoms were extracted
-        if not symptoms:
-            return jsonify({"error": "No symptoms detected in the provided input."}), 400
-
-        # Load supporting data
-        sym_des, precautions, workout, description, medications, diets = load_data()
-
-        # Load model
-        svc = load_model()
-
-        # Predict disease
-        predicted_disease = get_predicted_value(symptoms, svc)
-
-        # Get associated information
-        dis_des, precautions_list, medications_list, rec_diet, workout_list = identification_helper(
-            predicted_disease, description, precautions, medications, diets, workout
-        )
-
-        # Send response
-        return jsonify({
-            "detected_symptoms": symptoms,
-            "predicted_disease": predicted_disease,
-            "description": dis_des,
-            "precautions": precautions_list,
-            "medications": medications_list,
-            "diet": rec_diet,
-            "workout": workout_list
-        })
-
-    except Exception as e:
-        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
