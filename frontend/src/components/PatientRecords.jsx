@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWeb3 } from "../contexts/Web3Context";
 import { downloadFromIPFS } from "../utils/ipfsUtils";
+import FileViewer from "./FileViewer";
 
 const PatientRecords = () => {
   const { currentAccount, medicalRecordsContract, isPatient } = useWeb3();
@@ -17,6 +18,8 @@ const PatientRecords = () => {
   );
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [decryptedContent, setDecryptedContent] = useState(null);
+  const [fileBlob, setFileBlob] = useState(null);
+
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState(null);
   const [chatHistory, setChatHistory] = useState([
@@ -103,7 +106,7 @@ const PatientRecords = () => {
 
       try {
         encryptedData = await downloadFromIPFS(selectedRecord.recordHash);
-        setDecryptedContent(encryptedData);
+        setFileBlob(encryptedData);
       } catch (ipfsError) {
         console.error("IPFS download error:", ipfsError);
         alert("Failed to download data from IPFS: " + ipfsError.message);
@@ -125,13 +128,12 @@ const PatientRecords = () => {
     try {
       setLoading(true);
 
-      // const questionObj = {
-      //   question: prompt,
-      // },
-      // setChatHistory((prev) => [
-      //   ...prev,
+      chatHistory.push(prompt);
 
-      // ]);
+      // Step 1: Convert Blob to Text
+      const decryptedContent = await fileBlob.text();
+      console.log(decryptedContent);
+
       const response = await fetch(
         "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
         {
@@ -157,12 +159,7 @@ const PatientRecords = () => {
       console.log(data);
       setAiResponse(data.answer);
 
-      // setChatHistory((prev) => [
-      //   ...prev,
-      //   {
-      //     aiResponse: data.answer,
-      //   },
-      // ]);
+      chatHistory.push(data.answer);
     } catch (error) {
       console.error("Error sending data to AI:", error);
     } finally {
@@ -261,7 +258,7 @@ const PatientRecords = () => {
                       </div>
 
                       <div className="pt-4 border-t space-y-2">
-                        <label className="text-sm font-medium">
+                        {/* <label className="text-sm font-medium">
                           Decryption Key
                         </label>
                         <Input
@@ -269,7 +266,7 @@ const PatientRecords = () => {
                           value={decryptionKey}
                           onChange={(e) => setDecryptionKey(e.target.value)}
                           placeholder="Enter your personal decryption key"
-                        />
+                        /> */}
 
                         <Button
                           className="w-full"
@@ -296,15 +293,20 @@ const PatientRecords = () => {
 
       {/* File Content  */}
       <Card className="w-full md:w-2/3 flex flex-col p-6">
-        <Card className="h-1/4 pb-6 ">
+        <Card className="min-h-1/4 pb-6 ">
           <h5 className="pl-6 pb-2 font-medium border-b">Decrypted Content:</h5>
           <CardContent className="overflow-auto">
-            {decryptedContent ?? (
+            {/* {decryptedContent ?? (
               <p className="overflow-auto">{decryptedContent}</p>
-            )}
+            )} */}
+
+            <FileViewer fileBlob={fileBlob} />
           </CardContent>
         </Card>
         <Card className=" p-4 h-3/4">
+          <h5 className="pl-6 pb-2 font-medium border-b">
+            Disease Prediction AI
+          </h5>
           <CardContent className="space-y-4 flex flex-col justify-between h-full">
             <div className="space-y-3 max-h-80 overflow-y-auto">
               <div className="flex justify-start">

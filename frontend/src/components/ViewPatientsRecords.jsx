@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useWeb3 } from "../contexts/Web3Context";
 import { downloadFromIPFS } from "../utils/ipfsUtils";
 import { Label } from "./ui/label";
+import FileViewer from "./FileViewer";
 
 const ViewPatientsRecords = () => {
   const { currentAccount, medicalRecordsContract, isPatient, isDoctor } =
@@ -19,14 +20,12 @@ const ViewPatientsRecords = () => {
   );
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [decryptedContent, setDecryptedContent] = useState(null);
+  const [fileBlob, setFileBlob] = useState(null);
 
   const [patientId, setPatientId] = useState("");
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState(null);
-  const [chatHistory, setChatHistory] = useState([
-    "Hi",
-    "Hello! How are you ?",
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const fetchRecords = async () => {
     try {
@@ -100,7 +99,7 @@ const ViewPatientsRecords = () => {
 
       try {
         encryptedData = await downloadFromIPFS(selectedRecord.recordHash);
-        setDecryptedContent(encryptedData);
+        setFileBlob(encryptedData);
       } catch (ipfsError) {
         console.error("IPFS download error:", ipfsError);
         alert("Failed to download data from IPFS: " + ipfsError.message);
@@ -122,13 +121,12 @@ const ViewPatientsRecords = () => {
     try {
       setLoading(true);
 
-      // const questionObj = {
-      //   question: prompt,
-      // },
-      // setChatHistory((prev) => [
-      //   ...prev,
+      chatHistory.push(prompt);
 
-      // ]);
+      // Step 1: Convert Blob to Text
+      const decryptedContent = await fileBlob.text();
+      console.log(decryptedContent);
+
       const response = await fetch(
         "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
         {
@@ -154,12 +152,7 @@ const ViewPatientsRecords = () => {
       console.log(data);
       setAiResponse(data.answer);
 
-      // setChatHistory((prev) => [
-      //   ...prev,
-      //   {
-      //     aiResponse: data.answer,
-      //   },
-      // ]);
+      chatHistory.push(data.answer);
     } catch (error) {
       console.error("Error sending data to AI:", error);
     } finally {
@@ -167,10 +160,6 @@ const ViewPatientsRecords = () => {
       setLoading(false);
     }
   };
-
-  //   useEffect(() => {
-  //     console.log(chatHistory);
-  //   }, [chatHistory]);
 
   return (
     <div className="container mx-auto p-6 flex flex-col md:flex-row gap-4">
@@ -185,7 +174,7 @@ const ViewPatientsRecords = () => {
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-4">
             <Label className="text-sm font-medium">Patient's ID</Label>
             <Input
               value={patientId}
@@ -303,15 +292,20 @@ const ViewPatientsRecords = () => {
 
       {/* File Content  */}
       <Card className="w-full md:w-2/3 flex flex-col p-6">
-        <Card className="h-1/4 pb-6 ">
+        <Card className="min-h-1/4 pb-6 ">
           <h5 className="pl-6 pb-2 font-medium border-b">Decrypted Content:</h5>
           <CardContent className="overflow-auto">
-            {decryptedContent ?? (
+            {/* {decryptedContent ?? (
               <p className="overflow-auto">{decryptedContent}</p>
-            )}
+            )} */}
+
+            <FileViewer fileBlob={fileBlob} />
           </CardContent>
         </Card>
         <Card className=" p-4 h-3/4">
+          <h5 className="pl-6 pb-2 font-medium border-b">
+            Disease Prediction AI
+          </h5>
           <CardContent className="space-y-4 flex flex-col justify-between h-full">
             <div className="space-y-3 max-h-80 overflow-y-auto">
               <div className="flex justify-start">

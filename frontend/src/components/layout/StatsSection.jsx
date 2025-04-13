@@ -20,14 +20,17 @@ const StatsSection = () => {
                 strokeLinejoin="round"
                 className="text-primary"
               >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path>
+                <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                <line x1="8" y1="20" x2="8.01" y2="20"></line>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                <line x1="12" y1="22" x2="12.01" y2="22"></line>
+                <line x1="16" y1="16" x2="16.01" y2="16"></line>
+                <line x1="16" y1="20" x2="16.01" y2="20"></line>
               </svg>
             </div>
-            <h3 className="text-3xl font-bold text-primary">500+</h3>
-            <p className="text-muted-foreground">Doctors At Work</p>
+            <h3 className="text-3xl font-bold text-primary">BlockChain</h3>
+            <p className="text-muted-foreground">Secure Records</p>
           </CardContent>
         </Card>
 
@@ -47,11 +50,12 @@ const StatsSection = () => {
                 strokeLinejoin="round"
                 className="text-primary"
               >
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8"></polygon>
               </svg>
             </div>
-            <h3 className="text-3xl font-bold text-primary">58796+</h3>
-            <p className="text-muted-foreground">Happy Patients</p>
+            <h3 className="text-3xl font-bold text-primary">80%</h3>
+            <p className="text-muted-foreground">AI Prediction Accuracy</p>
           </CardContent>
         </Card>
 
@@ -71,12 +75,14 @@ const StatsSection = () => {
                 strokeLinejoin="round"
                 className="text-primary"
               >
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
               </svg>
             </div>
-            <h3 className="text-3xl font-bold text-primary">500+</h3>
-            <p className="text-muted-foreground">Medical Beds</p>
+            <h3 className="text-3xl font-bold text-primary">AI Assistance</h3>
+            <p className="text-muted-foreground">For Patients</p>
           </CardContent>
         </Card>
 
@@ -96,16 +102,19 @@ const StatsSection = () => {
                 strokeLinejoin="round"
                 className="text-primary"
               >
-                <path d="M8.21 13.89 7 23l9-9-8.99-9L7.2 13.9"></path>
-                <path d="M14.32 17.32 18 12a4 4 0 0 0-6.24-5 4 4 0 0 0-1.2 5.24 4 4 0 0 0 .24.26l3.54 3.82"></path>
+                <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path>
+                <line x1="2" y1="20" x2="2.01" y2="20"></line>
               </svg>
             </div>
-            <h3 className="text-3xl font-bold text-primary">200+</h3>
-            <p className="text-muted-foreground">Winning Awards</p>
+            <h3 className="text-3xl font-bold text-primary">
+              Disease Prediction
+            </h3>
+            <p className="text-muted-foreground">For Doctors</p>
           </CardContent>
         </Card>
       </div>
     </div>
   );
 };
+
 export default StatsSection;

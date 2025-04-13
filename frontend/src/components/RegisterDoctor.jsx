@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useWeb3 } from "../contexts/Web3Context";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
 const RegisterDoctor = () => {
   const [doctorAddress, setDoctorAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,62 +53,51 @@ const RegisterDoctor = () => {
   };
 
   return (
-    <div className="w-full max-w-md p-8 border border-gray-200 rounded-lg shadow-lg bg-white mx-auto">
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+    <Card className="mt-4 w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="text-center pb-2 border-b">
           Doctor Registration
-        </h2>
-
-        <p className="text-center text-gray-600">
+        </CardTitle>
+        <p className="text-sm text-muted-foreground text-center">
           As the admin, you can register new doctors to grant them access to add
           and view medical records.
         </p>
+      </CardHeader>
 
+      <CardContent>
         {message.content && (
           <div
-            className={`p-4 rounded-md ${
+            className={`mb-4 p-3 rounded-md text-sm ${
               message.type === "success"
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
             }`}
           >
             {message.content}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="doctorAddress"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Doctor's Ethereum Address *
-            </label>
-            <input
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="doctorAddress">Doctor's Ethereum Address *</Label>
+            <Input
               id="doctorAddress"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              placeholder="0x..."
               value={doctorAddress}
               onChange={(e) => setDoctorAddress(e.target.value)}
-              placeholder="0x..."
               required
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Enter the Ethereum address of the doctor you want to register
+            <p className="text-xs text-muted-foreground">
+              Enter the Ethereum address of the doctor you want to register.
             </p>
           </div>
 
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
-              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Registering..." : "Register Doctor"}
-          </button>
+          </Button>
         </form>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

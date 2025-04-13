@@ -31,19 +31,34 @@ export const uploadToIPFS = async (file) => {
   }
 };
 
+// export const downloadFromIPFS = async (ipfsHash) => {
+//   const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
+//   window.open(ipfsUrl, "_blank");
+//   let fileContent;
+
+//   await fetch(ipfsUrl)
+//     .then((res) => res.text()) // use .json() if it's JSON
+//     .then((data) => {
+//       fileContent = data;
+
+//       // console.log("File content:", fileContent);
+//     })
+//     .catch((err) => console.error("Failed to fetch IPFS file:", err));
+
+//   return fileContent;
+// };
+
 export const downloadFromIPFS = async (ipfsHash) => {
-  const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
+  const ipfsUrl = `http://127.0.0.1:8080/ipfs/${ipfsHash}`;
 
-  let fileContent;
+  try {
+    const response = await fetch(ipfsUrl);
+    if (!response.ok) throw new Error("Failed to fetch file");
 
-  await fetch(ipfsUrl)
-    .then((res) => res.text()) // use .json() if it's JSON
-    .then((data) => {
-      fileContent = data;
-
-      // console.log("File content:", fileContent);
-    })
-    .catch((err) => console.error("Failed to fetch IPFS file:", err));
-
-  return fileContent;
+    const blob = await response.blob(); // ⬅️ Use blob to handle binary data
+    return blob; // You can now use this Blob however you want
+  } catch (error) {
+    console.error("Error downloading file from IPFS:", error);
+    return null;
+  }
 };
