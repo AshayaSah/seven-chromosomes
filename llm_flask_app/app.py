@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from src.routes.content_routes import content_bp
 from src.routes.history_routes import history_bp
 from src.routes.medical_routes import medical_bp
-from src.routes.simple_model import personal_bp
 from src.config import logger, HOST, DEBUG
 
 load_dotenv()
@@ -18,7 +17,6 @@ def create_app():
     )
 
     app.register_blueprint(content_bp, url_prefix="/api")
-    app.register_blueprint(personal_bp, url_prefix="/api")
     app.register_blueprint(history_bp, url_prefix="/api")
     app.register_blueprint(medical_bp, url_prefix="/api")
 
