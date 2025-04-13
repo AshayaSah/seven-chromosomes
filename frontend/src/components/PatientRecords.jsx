@@ -7,11 +7,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useWeb3 } from "../contexts/Web3Context";
 import { downloadFromIPFS } from "../utils/ipfsUtils";
 import FileViewer from "./FileViewer";
+import { useNavigate } from "react-router-dom";
 
 const PatientRecords = () => {
   const { currentAccount, medicalRecordsContract, isPatient } = useWeb3();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isPatient) {
+      navigate("/");
+    }
+  }, [currentAccount, isPatient, navigate]);
+
   const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [decryptionKey, setDecryptionKey] = useState(
     localStorage.getItem("encryptionKey") || ""
@@ -22,10 +32,7 @@ const PatientRecords = () => {
 
   const [prompt, setPrompt] = useState("");
   const [aiResponse, setAiResponse] = useState(null);
-  const [chatHistory, setChatHistory] = useState([
-    "Hi",
-    "Hello! How are you ?",
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
 
   // Fetch patient records when component mounts
   useEffect(() => {
@@ -249,7 +256,7 @@ const PatientRecords = () => {
                         <p>
                           <strong>Date:</strong> {selectedRecord.timestamp}
                         </p>
-                        <p>
+                        <p className="overflow-auto">
                           <strong>IPFS Hash:</strong>{" "}
                           <span className="text-xs font-mono">
                             {selectedRecord.recordHash}

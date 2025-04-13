@@ -8,12 +8,22 @@ import { useWeb3 } from "../contexts/Web3Context";
 import { downloadFromIPFS } from "../utils/ipfsUtils";
 import { Label } from "./ui/label";
 import FileViewer from "./FileViewer";
+import { useNavigate } from "react-router-dom";
 
 const ViewPatientsRecords = () => {
   const { currentAccount, medicalRecordsContract, isPatient, isDoctor } =
     useWeb3();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isDoctor) {
+      navigate("/");
+    }
+  }, [currentAccount, isDoctor]);
+
   const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [decryptionKey, setDecryptionKey] = useState(
     localStorage.getItem("encryptionKey") || ""
@@ -27,6 +37,7 @@ const ViewPatientsRecords = () => {
   const [aiResponse, setAiResponse] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
 
+  //Fetch the Records of the Patients
   const fetchRecords = async () => {
     try {
       setLoading(true);
@@ -75,11 +86,13 @@ const ViewPatientsRecords = () => {
     }
   };
 
+  //Records the particular record
   const handleRecordClick = (record) => {
     setSelectedRecord(record);
     setDecryptedContent(null);
   };
 
+  //Handles Decryption of blob into file
   const handleDecrypt = async () => {
     // if (!decryptionKey) {
     //   alert("Please enter your decryption key");
@@ -114,51 +127,95 @@ const ViewPatientsRecords = () => {
   };
 
   // Sending the medical data to AI
+  // const handleSendToAi = async () => {
+  //   console.log("The decrypted content: ", decryptedContent);
+  //   console.log("Current Account", currentAccount);
+
+  //   try {
+  //     setLoading(true);
+
+  //     chatHistory.push(prompt);
+
+  //     // Step 1: Convert Blob to Text
+  //     // const decryptedContent = await fileBlob.text();
+  //     // console.log(decryptedContent);
+  //     console.log(prompt);
+
+  //     const response = await fetch(
+  //       "https://three-masks-joke.loca.lt/api/predict-medicine",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           text: prompt,
+  //         }),
+  //       }
+  //     );
+
+  //     // Check if the response is OK (status in the range 200-299)
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+
+  //     // const data = await response.text;
+  //     console.log(await response);
+  //     // setAiResponse(data.answer);
+
+  //     // chatHistory.push(data.answer);
+  //   } catch (error) {
+  //     console.error("Error sending data to AI:", error);
+  //   } finally {
+  //     setPrompt("");
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSendToAi = async () => {
-    console.log("The decrypted content: ", decryptedContent);
-    console.log("Current Account", currentAccount);
+    setLoading(true);
+    chatHistory.push(prompt);
 
-    try {
-      setLoading(true);
+    const API_URL =
+      "https://normally-poetic-ferret.ngrok-free.app/api/predict-medicine";
 
-      chatHistory.push(prompt);
+    const requestData = {
+      text: prompt,
+    };
 
-      // Step 1: Convert Blob to Text
-      const decryptedContent = await fileBlob.text();
-      console.log(decryptedContent);
+    fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then(async (response) => {
+        const text = await response.text();
 
-      const response = await fetch(
-        "https://normally-poetic-ferret.ngrok-free.app/api/process-content",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            source: decryptedContent,
-            source_type: "raw",
-            question: prompt,
-            username: currentAccount,
-          }),
+        try {
+          // Optional cleanup if localtunnel injects characters before/after JSON
+          const cleanText = text
+            .trim()
+            .replace(/^[^\[{]([\[{].[\]}])[^}\]]*$/, "$1");
+
+          // Clean the text before parsing to handle NaN and other invalid values
+          const sanitizedText = cleanText.replace(/NaN/g, '"Not available"');
+
+          const data = JSON.parse(sanitizedText);
+          console.log("This is data : ", data);
+          // const aiResponse = JSON.stringify(data, null, 2);
+
+          // console.log(JSON.stringify(data, null, 2));
+          setLoading(false);
+          chatHistory.push(data.description);
+        } catch (err) {
+          console.error("JSON parse error:", err.message);
         }
-      );
-
-      // Check if the response is OK (status in the range 200-299)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log(data);
-      setAiResponse(data.answer);
-
-      chatHistory.push(data.answer);
-    } catch (error) {
-      console.error("Error sending data to AI:", error);
-    } finally {
-      setPrompt("");
-      setLoading(false);
-    }
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err.message);
+      });
   };
 
   return (
@@ -302,25 +359,18 @@ const ViewPatientsRecords = () => {
             <FileViewer fileBlob={fileBlob} />
           </CardContent>
         </Card>
-        <Card className=" p-4 h-3/4">
+        <Card className="p-4 h-full flex flex-col">
           <h5 className="pl-6 pb-2 font-medium border-b">
             Disease Prediction AI
           </h5>
-          <CardContent className="space-y-4 flex flex-col justify-between h-full">
-            <div className="space-y-3 max-h-80 overflow-y-auto">
+          <CardContent className="flex flex-col overflow-auto h-full p-0 pt-4">
+            {/* Chat history - will expand to fill available space */}
+            <div className="flex-grow overflow-y-auto space-y-3 mb-4 pr-2">
               <div className="flex justify-start">
                 <div className="bg-gray-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
                   Hello! How can I help you today?
                 </div>
               </div>
-
-              {/* {aiResponse && (
-                <div className="flex justify-start">
-                  <div className="bg-blue-100 text-blue-800 rounded-lg px-4 py-2 text-sm max-w-[75%]">
-                    {aiResponse}
-                  </div>
-                </div>
-              )} */}
 
               {chatHistory &&
                 chatHistory.map((chat, index) => {
@@ -342,7 +392,8 @@ const ViewPatientsRecords = () => {
                 })}
             </div>
 
-            <div className="flex items-baseline gap-2">
+            {/* Input area - fixed at bottom */}
+            <div className="flex items-baseline gap-2 mt-auto">
               <Input
                 type="text"
                 placeholder="Ask something..."

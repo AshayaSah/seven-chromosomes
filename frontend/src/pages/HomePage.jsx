@@ -28,8 +28,8 @@ export default function MecareHealthcare() {
       {/* Services Section */}
       <Services></Services>
 
-      {/* About Section */}
-      <About></About>
+      {/* About Section
+      <About></About> */}
 
       {/* Footer  */}
       <Footer></Footer>

@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useWeb3 } from "../contexts/Web3Context";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const RegisterDoctor = () => {
+  const { currentAccount, medicalRecordsContract, isAdmin } = useWeb3();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate("/");
+    }
+  }, [currentAccount, isAdmin, navigate]);
+
   const [doctorAddress, setDoctorAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", content: "" });
-
-  const { currentAccount, medicalRecordsContract } = useWeb3();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,5 +1,5 @@
 // src/components/AddRecord.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useWeb3 } from "../contexts/Web3Context";
 import { uploadToIPFS } from "../utils/ipfsUtils";
 
@@ -15,9 +15,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 const AddPatientRecord = () => {
   const { currentAccount, medicalRecordsContract, isDoctor } = useWeb3();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isDoctor) {
+      navigate("/");
+    }
+  }, [currentAccount, isDoctor, navigate]);
+
   const [patientAddress, setPatientAddress] = useState(currentAccount);
   const [recordType, setRecordType] = useState("");
   const [doctorName, setDoctorName] = useState("");

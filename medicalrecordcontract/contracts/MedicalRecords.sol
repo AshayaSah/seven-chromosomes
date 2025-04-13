@@ -185,4 +185,8 @@ contract MedicalRecords {
     function isDoctor(address _address) public view returns (bool) {
         return doctors[_address];
     }
+
+    function isAdmin(address _address) public view returns (bool) {
+        return _address == admin;
+    }
 }

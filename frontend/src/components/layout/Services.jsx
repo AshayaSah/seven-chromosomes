@@ -2,46 +2,19 @@ import { Card, CardContent } from "../ui/card";
 import Magnet from "../ui/magnet";
 
 const Services = () => {
-  const cardContent = [
-    {
-      imageSrc:
-        "https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58",
-      altText: "Online Emergency",
-      captionText: "Online Emergency",
-      overlayContent: `Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-              Duis vestibulum eget eros maximus pretium.`,
-    },
-    {
-      imageSrc:
-        "https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58",
-      altText: "Medication Service",
-      captionText: "Medication Service",
-      overlayContent: `Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-              Duis vestibulum eget eros maximus pretium.`,
-    },
-    {
-      imageSrc:
-        "https://i.scdn.co/image/ab67616d0000b273d9985092cd88bffd97653b58",
-      altText: "24hr Health Program",
-      captionText: "24hr Health Program",
-      overlayContent: ` Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-              Duis vestibulum eget eros maximus pretium.`,
-    },
-  ];
-
   return (
     <div className="container mx-auto py-16 px-4">
       <div className="text-center mb-12">
-        <div className="inline-block px-4 py-1 bg-secondary/20 text-secondary rounded-full text-sm font-medium mb-4">
+        <div className="inline-block px-4 py-1 bg-secondary/20 text-muted-foreground rounded-full text-sm font-medium mb-4">
           OUR SERVICES
         </div>
         <h2 className="text-3xl font-bold mb-4">
           Our Special Services For You
         </h2>
         <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-          Fusce placerat nibh in orci laoreet laoreet. Aliquam erat volutpat.
-          Praesent nec ligula arcu. Aliquam eu urna pulvinar, dictum libero in,
-          porta massa.
+          We built MedChain AI, a blockchain-powered healthcare ecosystem that
+          gives patients control of their health data while providing
+          AI-assisted insights for better clinical decision-making.
         </p>
       </div>
 
@@ -67,10 +40,10 @@ const Services = () => {
                   <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Online Emergency</h3>
+              <h3 className="text-xl font-bold mb-2">Reliability and Trust</h3>
               <p className="text-muted-foreground">
-                Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-                Duis vestibulum eget eros maximus pretium.
+                Blockchain are completely secured and no one else can access
+                without the user consent.
               </p>
             </CardContent>
           </Card>
@@ -100,10 +73,13 @@ const Services = () => {
                   <path d="M8 18h8"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Medication Service</h3>
+              <h3 className="text-xl font-bold mb-2">
+                80% Accurate Disease Prediction
+              </h3>
               <p className="text-muted-foreground">
-                Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-                Duis vestibulum eget eros maximus pretium.
+                Our SVC model trained on Kaggle datasets achieves 80% accuracy
+                in our tests. We position this as a decision support tool for
+                doctors, not a replacement.
               </p>
             </CardContent>
           </Card>
@@ -130,10 +106,10 @@ const Services = () => {
                   <path d="M3.34 19a10 10 0 1 1 17.32 0"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">24hr Health Program</h3>
+              <h3 className="text-xl font-bold mb-2">General AI Assistant</h3>
               <p className="text-muted-foreground">
-                Mauris nunc felis, congue eu convallis in, bibendum vitae nisl.
-                Duis vestibulum eget eros maximus pretium.
+                Patients can ask general questions like Diet Plans and Exercises
+                on the basis of their report.
               </p>
             </CardContent>
           </Card>
