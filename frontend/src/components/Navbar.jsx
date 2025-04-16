@@ -4,19 +4,10 @@ import { Link, useLocation } from "react-router-dom";
 import { useWeb3 } from "../contexts/Web3Context";
 import { ChevronRight } from "lucide-react"; // Install if not already: npm install lucide-react
 import { Button } from "@/components/ui/button"; // Adjust this path based on your button component location
-import { ModeToggle } from "./ui/ModeToggle";
+
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
+import { ModeToggle } from "./mode-toggle";
 
 const Navbar = () => {
   const { isAdmin, currentAccount, connectWallet, isDoctor, isPatient } =
@@ -30,7 +21,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="shadow-sm">
       <div className="container mx-auto py-4 px-4 flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center">
@@ -97,7 +88,7 @@ const Navbar = () => {
 
         {/* Right Button / Wallet */}
         <div className="flex items-center space-x-4">
-          {/* <ModeToggle></ModeToggle> */}
+          <ModeToggle></ModeToggle>
           {!currentAccount ? (
             <Button
               variant="default"

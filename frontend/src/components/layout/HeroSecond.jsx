@@ -76,13 +76,13 @@ const HeroAI = () => {
             <span className="mr-2">⚙️</span> AI + Business
           </div>
           <h1 className="text-5xl font-bold leading-tight">
-            Seamlessly
-            <br /> AI Integration
-            <br /> for Business
+            Disease Prediction Model
+            <br /> & Presonal Assistance
+            <br /> For Hospitals
           </h1>
           <p className="text-lg text-gray-300">
-            We will help integrate AI models into your <br /> application or
-            business process
+            We have achived 80% accurate Disease Prediction <br /> Medical data
+            are crucial and Also is our concern.
           </p>
           <div className="mt-6 flex items-center gap-4 justify-center md:justify-start">
             <Magnet padding={50} disabled={false} magnetStrength={5}>

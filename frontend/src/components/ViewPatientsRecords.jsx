@@ -133,8 +133,7 @@ const ViewPatientsRecords = () => {
     setChatHistory((prevHistory) => [...prevHistory, prompt]);
 
     try {
-      const API_URL =
-      process.env.DOCTOR_API;
+      const API_URL = process.env.DOCTOR_API;
 
       const requestData = {
         text: prompt,
@@ -398,19 +397,19 @@ const ViewPatientsRecords = () => {
           </CardContent>
         </Card>
 
-        <Card className="p-4 h-full flex flex-col">
+        <Card className="p-4 h-full flex flex-col gap-0">
           <h5 className="pl-6 pb-2 font-medium border-b">
             Disease Prediction AI
           </h5>
-          <CardContent className="flex flex-col justify-evenly h-full p-0 pt-4">
+          <CardContent className="flex-1 flex flex-col justify-between gap-0 h-full p-0 pt-4">
             {/* Chat history - with fixed height and auto-scroll */}
             <div
               ref={chatContainerRef}
-              className="flex-grow overflow-y-auto space-y-3 mb-4 pr-2 max-h-96" // Set a max height
+              className="flex-1 flex-grow overflow-y-auto space-y-3 mb-4 pr-2 max-h-256" // Set a max height
               style={{ scrollBehavior: "smooth" }}
             >
-              <div className="flex flex-col gap-2 justify-start">
-                <div className="bg-gray-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+              <div className="flex-1 flex flex-col gap-2 justify-start">
+                <div className="bg-secondary rounded-lg px-4 py-2 text-sm max-w-[75%]">
                   Hello! How can I help you today?
                 </div>
 
@@ -420,7 +419,7 @@ const ViewPatientsRecords = () => {
 
                     return chatIndex % 2 !== 0 ? (
                       <div key={index} className="flex justify-end">
-                        <div className="bg-blue-100 rounded-lg px-4 py-2 text-sm max-w-[75%]">
+                        <div className="bg-primary text-popover rounded-lg px-4 py-2 text-sm max-w-[75%]">
                           {chat}
                         </div>
                       </div>
@@ -436,7 +435,7 @@ const ViewPatientsRecords = () => {
             </div>
 
             {/* Input area - fixed at bottom */}
-            <div className="flex items-baseline gap-2 mt-auto">
+            <div className="h-10 flex items-baseline gap-2">
               <Input
                 type="text"
                 placeholder="Ask something..."

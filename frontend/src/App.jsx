@@ -7,7 +7,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Web3Provider } from "./contexts/Web3Context";
-import { ThemeProvider } from "@/contexts/ThemeProvider";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -19,11 +18,12 @@ import PatientRecords from "./components/PatientRecords";
 import HomePage from "./pages/HomePage";
 import Topbar from "./components/layout/Topbar";
 import ViewPatientsRecords from "./components/ViewPatientsRecords";
+import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
   return (
-    <Web3Provider>
-      <ThemeProvider>
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <Web3Provider>
         <Router>
           <Topbar></Topbar>
           <Navbar />
@@ -44,8 +44,8 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
-      </ThemeProvider>
-    </Web3Provider>
+      </Web3Provider>
+    </ThemeProvider>
   );
 }
 

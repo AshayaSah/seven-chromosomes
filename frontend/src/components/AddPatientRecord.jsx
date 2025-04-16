@@ -106,7 +106,7 @@ const AddPatientRecord = () => {
     return encryptionKey;
   };
   return (
-    <Card className="w-full mx-auto mt-4 max-w-2xl p-8 border border-gray-200 shadow-lg bg-white">
+    <Card className="w-full mx-auto mt-4 max-w-2xl p-8 bordershadow-lg">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-muted-foreground">
           Add Medical Record
