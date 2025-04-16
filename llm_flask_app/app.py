@@ -1,22 +1,29 @@
-# app.py
 from flask import Flask
-from src.routes.api_routes import api_bp
-from config import Config
-from src.utils.logger import setup_logger
-import os
+from flask_cors import CORS
+from dotenv import load_dotenv
+from src.routes.content_routes import content_bp
+from src.routes.history_routes import history_bp
+from src.routes.medical_routes import medical_bp
+from src.config import logger, HOST, DEBUG
+
+load_dotenv()
+
 def create_app():
     app = Flask(__name__)
-    os.environ["USER_AGENT"] = Config.USER_AGENT
-    
-    # Set up logging
-    logger = setup_logger()
+
+    CORS(
+        app,
+        origins=["*"]     
+    )
+
+    app.register_blueprint(content_bp, url_prefix="/api")
+    app.register_blueprint(history_bp, url_prefix="/api")
+    app.register_blueprint(medical_bp, url_prefix="/api")
+
     logger.info("Starting LLM Flask application")
-    
-    # Register blueprints
-    app.register_blueprint(api_bp, url_prefix="/api")
-    
     return app
+
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT)
+    app.run(debug=DEBUG, host=HOST)

@@ -1,5 +1,7 @@
 llm_flask_app/faissdb
+llm_flask_app/data/*
 llm_flask_app/venv
+
 llm_flask_app/.env
 
 __pycache__
@@ -24,11 +26,11 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.ideadd
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
+
