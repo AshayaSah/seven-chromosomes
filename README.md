@@ -1,4 +1,4 @@
-# HealthChain AI: Blockchain-based Patient Records with AI Disease Prodiction and AI Assistance
+# HealthChain AI: Blockchain-based Patient Records with AI Disease Prediction and AI Assistance
 
 ## Problem Statement
 "A significant number of medication errors in Nepalese hospitals is caused by manual processes and lack of digitalization put patient safety at serious risk. Out of 177 patients, 94% encountered medication errors and 32% of those errors turned harmful. Why are we still letting this happen?"
